@@ -1,0 +1,55 @@
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { AppLayout } from './layouts/AppLayout';
+import { AddVehiclePage } from './pages/AddVehiclePage';
+import { DashboardPage } from './pages/DashboardPage';
+import { ExpensesPage } from './pages/ExpensesPage';
+import { FuelPage } from './pages/FuelPage';
+import { GpsTrackingPage } from './pages/GpsTrackingPage';
+import { LandingPage } from './pages/LandingPage';
+import { LoginPage } from './pages/LoginPage';
+import { MaintenancePage } from './pages/MaintenancePage';
+import { ProfilePage } from './pages/ProfilePage';
+import { RegisterPage } from './pages/RegisterPage';
+import { TripsPage } from './pages/TripsPage';
+import { VehicleDetailsPage } from './pages/VehicleDetailsPage';
+import { VehiclesPage } from './pages/VehiclesPage';
+import { ProtectedRoute } from './routes/ProtectedRoute';
+import { PublicOnlyRoute } from './routes/PublicOnlyRoute';
+
+export default function App() {
+  return (
+    <ThemeProvider>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+
+            <Route element={<PublicOnlyRoute />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Route>
+
+            <Route element={<ProtectedRoute />}>
+              <Route element={<AppLayout />}>
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/vehicles" element={<VehiclesPage />} />
+                <Route path="/vehicles/new" element={<AddVehiclePage />} />
+                <Route path="/vehicles/:id" element={<VehicleDetailsPage />} />
+                <Route path="/trips" element={<TripsPage />} />
+                <Route path="/gps-tracking" element={<GpsTrackingPage />} />
+                <Route path="/expenses" element={<ExpensesPage />} />
+                <Route path="/fuel" element={<FuelPage />} />
+                <Route path="/maintenance" element={<MaintenancePage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+              </Route>
+            </Route>
+
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
+    </ThemeProvider>
+  );
+}

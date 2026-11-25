@@ -1,0 +1,19 @@
+{
+  "name": "rideexpense-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Motri - Full-stack MERN vehicle mobility, operations, tracking, records & insights platform",
+  "workspaces": [
+    "rideexpense-backend",
+    "rideexpense-web"
+  ],
+  "scripts": {
+    "dev:backend": "npm --workspace=rideexpense-backend run dev",
+    "dev:web": "npm --workspace=rideexpense-web run dev",
+    "build:backend": "npm --workspace=rideexpense-backend run build",
+    "build:web": "npm --workspace=rideexpense-web run build",
+    "build": "npm run build:backend && npm run build:web",
+    "test:backend": "npm --workspace=rideexpense-backend test",
+    "lint": "npm --workspace=rideexpense-backend run lint && npm --workspace=rideexpense-web run lint"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "rideexpense-backend": {
+      "root": "rideexpense-backend",
+      "framework": "express",
+      "entrypoint": "src/app.ts"
+    },
+    "rideexpense-web": {
+      "root": "rideexpense-web",
+      "framework": "vite"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": { "service": "rideexpense-backend" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "rideexpense-web" }
+    }
+  ]
+}

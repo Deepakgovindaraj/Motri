@@ -79,15 +79,42 @@ export async function ensureCollectionsAndDefaults(): Promise<void> {
   }
 }
 
+let connectionPromise: Promise<typeof mongoose> | null = null;
+let initializedDefaults = false;
+
 export async function connectDatabase(uri: string = env.MONGODB_URI): Promise<typeof mongoose> {
-  mongoose.set('strictQuery', true);
-  const conn = await mongoose.connect(uri, {
-    serverSelectionTimeoutMS: 5000,
-  });
-  await ensureCollectionsAndDefaults();
-  return conn;
+  if (mongoose.connection.readyState === 1) {
+    if (!initializedDefaults) {
+      await ensureCollectionsAndDefaults();
+      initializedDefaults = true;
+    }
+    return mongoose;
+  }
+
+  if (!connectionPromise) {
+    mongoose.set('strictQuery', true);
+    connectionPromise = mongoose
+      .connect(uri, {
+        serverSelectionTimeoutMS: 5000,
+      })
+      .then(async (conn) => {
+        if (!initializedDefaults) {
+          await ensureCollectionsAndDefaults();
+          initializedDefaults = true;
+        }
+        return conn;
+      })
+      .catch((error) => {
+        connectionPromise = null;
+        throw error;
+      });
+  }
+
+  return connectionPromise;
 }
 
 export async function disconnectDatabase(): Promise<void> {
+  connectionPromise = null;
+  initializedDefaults = false;
   await mongoose.disconnect();
 }

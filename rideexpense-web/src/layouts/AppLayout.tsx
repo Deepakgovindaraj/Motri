@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
+  BarChart3,
   Car,
   Fuel,
   Gauge,
@@ -8,6 +9,7 @@ import {
   LogOut,
   Menu,
   Navigation,
+  PiggyBank,
   PlusCircle,
   Receipt,
   Route as RouteIcon,
@@ -26,6 +28,8 @@ const navItems = [
   { to: '/expenses', label: 'Expenses', icon: Receipt },
   { to: '/fuel', label: 'Fuel & EV', icon: Fuel },
   { to: '/maintenance', label: 'Maintenance', icon: Wrench },
+  { to: '/analytics', label: 'Analytics', icon: BarChart3 },
+  { to: '/budgets', label: 'Budgets', icon: PiggyBank },
   { to: '/profile', label: 'Profile & Settings', icon: UserIcon },
 ];
 

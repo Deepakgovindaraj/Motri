@@ -3,6 +3,8 @@ import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppLayout } from './layouts/AppLayout';
 import { AddVehiclePage } from './pages/AddVehiclePage';
+import { AnalyticsPage } from './pages/AnalyticsPage';
+import { BudgetsPage } from './pages/BudgetsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ExpensesPage } from './pages/ExpensesPage';
 import { FuelPage } from './pages/FuelPage';
@@ -42,6 +44,8 @@ export default function App() {
                 <Route path="/expenses" element={<ExpensesPage />} />
                 <Route path="/fuel" element={<FuelPage />} />
                 <Route path="/maintenance" element={<MaintenancePage />} />
+                <Route path="/analytics" element={<AnalyticsPage />} />
+                <Route path="/budgets" element={<BudgetsPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>

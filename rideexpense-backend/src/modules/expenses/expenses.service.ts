@@ -14,6 +14,7 @@ import {
 import { IExpense } from '../../models/Expense';
 import { calculateFuelCost, decimalToNumber, toDecimal128 } from '../../utils/calculations';
 import { AppError } from '../../utils/errors';
+import { evaluateBudgetAlertsForExpense } from '../budgets/budgets.service';
 import {
   CreateExpenseInput,
   CreateFuelExpenseInput,
@@ -64,6 +65,7 @@ export async function createExpense(userId: string, input: CreateExpenseInput) {
 
   const currency = input.currency ?? (await getUserCurrency(userId));
 
+  const expenseDate = input.expenseDate ?? new Date();
   const expense = await Expense.create({
     userId,
     vehicleId: vehicle._id,
@@ -73,9 +75,16 @@ export async function createExpense(userId: string, input: CreateExpenseInput) {
     currency,
     paymentMethod: input.paymentMethod,
     description: input.description,
-    expenseDate: input.expenseDate ?? new Date(),
+    expenseDate,
     attachmentUrl: input.attachmentUrl || undefined,
   });
+
+  await evaluateBudgetAlertsForExpense(
+    userId,
+    expenseDate,
+    vehicle._id.toString(),
+    category._id.toString(),
+  );
 
   await AuditLog.create({
     userId,
@@ -292,6 +301,13 @@ export async function createFuelExpense(userId: string, input: CreateFuelExpense
     metadata: { expenseId: expense._id.toString(), totalCost },
   });
 
+  await evaluateBudgetAlertsForExpense(
+    userId,
+    expenseDate,
+    vehicle._id.toString(),
+    category._id.toString(),
+  );
+
   await expense.populate([
     { path: 'vehicleId', select: 'vehicleName registrationNumber vehicleType' },
     { path: 'categoryId', select: 'name slug icon color' },
@@ -368,6 +384,13 @@ export async function createMaintenanceExpense(
     resourceId: maintenanceRecord._id.toString(),
     metadata: { expenseId: expense._id.toString(), amount: input.amount },
   });
+
+  await evaluateBudgetAlertsForExpense(
+    userId,
+    serviceDate,
+    vehicle._id.toString(),
+    category._id.toString(),
+  );
 
   await expense.populate([
     { path: 'vehicleId', select: 'vehicleName registrationNumber vehicleType' },

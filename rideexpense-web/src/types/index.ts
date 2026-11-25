@@ -193,6 +193,106 @@ export interface MaintenanceReminder {
   reasons: string[];
 }
 
+export interface DashboardAnalytics {
+  summary: {
+    todayExpenses: number;
+    weeklyExpenses: number;
+    monthlyExpenses: number;
+    annualExpenses: number;
+    totalExpenses: number;
+    totalDistance: number;
+    fuelExpenditure: number;
+    maintenanceExpenditure: number;
+    averageMileage: number;
+    costPerKm: number;
+    registeredVehicleCount: number;
+  };
+  monthlyChart: Array<{ label: string; year: number; month: number; amount: number }>;
+  vehicleExpenses: Array<{
+    vehicleId: string;
+    vehicleName: string;
+    registrationNumber: string;
+    amount: number;
+    count: number;
+  }>;
+  categoryDistribution: Array<{
+    categoryId: string;
+    name: string;
+    slug: string;
+    color: string;
+    amount: number;
+    count: number;
+    percentage: number;
+  }>;
+}
+
+export interface PeriodReportsResponse {
+  year: number;
+  monthlyReport: Array<{ month: number; label: string; amount: number; count: number }>;
+  dailyReport: Array<{ date: string; amount: number; count: number }>;
+  weeklyReport: Array<{ label: string; amount: number; count: number }>;
+  annualReport: Array<{ year: number; amount: number; count: number }>;
+}
+
+export interface MileageAnalyticsResponse {
+  averageMileage: number;
+  series: Array<{
+    date: string;
+    vehicleName: string;
+    odometer: number;
+    mileage: number;
+    unitPrice: number;
+    quantity: number;
+  }>;
+  byVehicleAverage: Array<{
+    vehicleId: string;
+    vehicleName: string;
+    averageMileage: number;
+  }>;
+}
+
+export interface CostPerKmResponse {
+  overallCostPerKm: number;
+  totalSpend: number;
+  totalDistance: number;
+  timeline: Array<{
+    label: string;
+    spend: number;
+    distance: number;
+    costPerKm: number;
+  }>;
+}
+
+export interface VehicleComparisonItem {
+  vehicleId: string;
+  vehicleName: string;
+  vehicleType: VehicleType;
+  registrationNumber: string;
+  totalSpend: number;
+  fuelSpend: number;
+  maintenanceSpend: number;
+  totalDistance: number;
+  tripCount: number;
+  expenseCount: number;
+  averageMileage: number;
+  costPerKm: number;
+}
+
+export interface BudgetProgress {
+  _id: string;
+  period: 'monthly' | 'weekly' | 'annual' | 'custom';
+  startDate: string;
+  endDate: string;
+  category: { _id: string; name: string; slug: string; color: string } | null;
+  vehicle: { _id: string; vehicleName: string; registrationNumber: string } | null;
+  totalBudget: number;
+  amountSpent: number;
+  remainingBudget: number;
+  spendingPercentage: number;
+  alertLevel: 'ok' | 'warning_75' | 'critical_90' | 'exceeded_100';
+  triggeredThreshold: number | null;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;

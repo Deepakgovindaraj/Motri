@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import mongoose from 'mongoose';
+import analyticsRoutes from '../modules/analytics/analytics.routes';
 import authRoutes from '../modules/auth/auth.routes';
+import budgetsRoutes from '../modules/budgets/budgets.routes';
 import expensesRoutes from '../modules/expenses/expenses.routes';
 import fuelRoutes from '../modules/fuel/fuel.routes';
 import maintenanceRoutes from '../modules/maintenance/maintenance.routes';
@@ -33,5 +35,7 @@ router.use('/trips', tripsRoutes);
 router.use('/expenses', expensesRoutes);
 router.use('/fuel', fuelRoutes);
 router.use('/maintenance', maintenanceRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/budgets', budgetsRoutes);
 
 export default router;

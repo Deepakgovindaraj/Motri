@@ -12,6 +12,16 @@
   --color-muted-grey: #A6AAA3;
   --color-soft-sage: #DCE8D0;
   --color-border: #E4E2D9;
+  color-scheme: light;
+}
+
+html.dark {
+  --color-graphite: #F4F3ED;
+  --color-ivory: #0E100F;
+  --color-white: #171A18;
+  --color-soft-sage: #1E2E18;
+  --color-border: #2B302C;
+  color-scheme: dark;
 }
 
 @layer base {
@@ -32,4 +42,8 @@
   font-family: 'Manrope', 'Inter', system-ui, sans-serif;
   border-radius: 12px;
   z-index: 1;
+}
+
+html.dark .trip-map-street .leaflet-tile-pane {
+  filter: brightness(0.88) invert(1) contrast(0.92) hue-rotate(195deg) saturate(0.45);
 }

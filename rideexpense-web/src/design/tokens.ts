@@ -17,8 +17,8 @@ export const VEHIXA_COLORS = {
 export const VEHIXA_TYPOGRAPHY = {
   fontFamily: "'Manrope', 'Inter', system-ui, sans-serif",
   heroNumber: 'text-4xl sm:text-5xl font-bold tracking-tight tabular-nums',
-  sectionTitle: 'text-lg font-semibold tracking-tight text-[#171A18]',
-  label: 'text-xs font-semibold uppercase tracking-[0.08em] text-[#7D827A]',
+  sectionTitle: 'text-lg font-semibold tracking-tight text-[#171A18] dark:text-[#F4F3ED]',
+  label: 'text-xs font-semibold uppercase tracking-[0.08em] text-[#7D827A] dark:text-[#8E938B]',
 } as const;
 
 export const VEHIXA_SPACING = {

@@ -138,10 +138,10 @@ export function MaintenancePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
             Maintenance Timeline
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Track servicing, oil changes, tyres, insurance, and upcoming service schedules.
           </p>
         </div>
@@ -153,11 +153,11 @@ export function MaintenancePage() {
       {/* Upcoming & Overdue Reminders */}
       <Card className="p-6">
         <div className="mb-4 flex items-center gap-2">
-          <BellRing className="h-4 w-4 text-[#171A18]" />
-          <h2 className="text-base font-bold text-[#171A18]">Upcoming &amp; Scheduled Service</h2>
+          <BellRing className="h-4 w-4 text-[#171A18] dark:text-[#C5F467]" />
+          <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Upcoming &amp; Scheduled Service</h2>
         </div>
         {reminders.length === 0 ? (
-          <p className="text-xs text-[#7D827A]">
+          <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
             No service reminders scheduled. Set a next service date or odometer target when logging maintenance.
           </p>
         ) : (
@@ -165,13 +165,13 @@ export function MaintenancePage() {
             {reminders.map((rem) => (
               <div
                 key={rem._id}
-                className="flex items-start justify-between gap-2 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-4"
+                className="flex items-start justify-between gap-2 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-4 dark:border-[#2B302C] dark:bg-[#1E221F]"
               >
                 <div>
-                  <p className="text-sm font-bold text-[#171A18]">
+                  <p className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">
                     {rem.vehicle.vehicleName} · {rem.serviceType}
                   </p>
-                  <p className="mt-1 text-xs text-[#5C615A]">
+                  <p className="mt-1 text-xs text-[#5C615A] dark:text-[#B0B4AD]">
                     {rem.nextServiceDate ? `Due ${formatDate(rem.nextServiceDate)}` : ''}
                     {rem.nextServiceDate && rem.nextServiceOdometer ? ' · ' : ''}
                     {rem.nextServiceOdometer
@@ -190,56 +190,56 @@ export function MaintenancePage() {
       </Card>
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       {/* Vertical Past Service Timeline */}
       <Card className="p-6">
-        <h2 className="mb-6 text-base font-bold text-[#171A18]">Past Service Records</h2>
+        <h2 className="mb-6 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Past Service Records</h2>
         {isLoading ? (
-          <div className="flex items-center justify-center py-12 text-sm text-[#7D827A]">
+          <div className="flex items-center justify-center py-12 text-sm text-[#7D827A] dark:text-[#8E938B]">
             <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading service timeline...
           </div>
         ) : records.length === 0 ? (
           <div className="py-12 text-center">
             <Wrench className="mx-auto h-10 w-10 text-[#A6AAA3]" />
-            <h3 className="mt-3 text-base font-bold text-[#171A18]">No service records yet</h3>
-            <p className="mt-1 text-sm text-[#5C615A]">
+            <h3 className="mt-3 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">No service records yet</h3>
+            <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
               Log your vehicle&apos;s servicing, repairs, or oil changes to build its history.
             </p>
           </div>
         ) : (
-          <div className="relative space-y-6 border-l-2 border-[#E4E2D9] pl-6">
+          <div className="relative space-y-6 border-l-2 border-[#E4E2D9] pl-6 dark:border-[#2B302C]">
             {records.map((rec) => {
               const vehicle = rec.vehicleId as VehicleRef;
               return (
                 <div key={rec._id} className="relative">
-                  <span className="absolute -left-[31px] top-1.5 h-3 w-3 rounded-full border-2 border-[#171A18] bg-[#C5F467]" />
-                  <div className="flex flex-col justify-between gap-3 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-4 sm:flex-row sm:items-center">
+                  <span className="absolute -left-[31px] top-1.5 h-3 w-3 rounded-full border-2 border-[#171A18] bg-[#C5F467] dark:border-[#0E100F]" />
+                  <div className="flex flex-col justify-between gap-3 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-4 sm:flex-row sm:items-center dark:border-[#2B302C] dark:bg-[#1E221F]">
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-bold text-[#171A18]">
+                        <span className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">
                           {vehicle?.vehicleName ?? 'Vehicle'}
                         </span>
                         <Badge variant="sage">{rec.serviceType}</Badge>
                       </div>
-                      <p className="mt-1 text-xs text-[#5C615A]">
+                      <p className="mt-1 text-xs text-[#5C615A] dark:text-[#B0B4AD]">
                         {formatDate(rec.serviceDate)} · Odometer: {formatNumber(rec.odometer, 0)}{' '}
                         {distanceUnit}
                         {rec.notes ? ` · ${rec.notes}` : ''}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-extrabold tabular-nums text-[#171A18]">
+                      <span className="text-sm font-extrabold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                         {formatCurrency(
                           rec.expenseId?.amount ?? 0,
                           rec.expenseId?.currency || currency,
                         )}
                       </span>
                       <Button variant="ghost" size="sm" onClick={() => void handleDelete(rec._id)}>
-                        <Trash2 className="h-4 w-4 text-[#B42318]" />
+                        <Trash2 className="h-4 w-4 text-[#B42318] dark:text-[#F87171]" />
                       </Button>
                     </div>
                   </div>
@@ -258,7 +258,7 @@ export function MaintenancePage() {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {formError && (
-            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
               {formError}
             </div>
           )}
@@ -317,7 +317,7 @@ export function MaintenancePage() {
             />
           </div>
           <Input label="Notes" placeholder="Workshop or parts details" {...register('notes')} />
-          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
             <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
               Cancel
             </Button>

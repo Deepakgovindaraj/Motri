@@ -21,7 +21,7 @@ export function VehicleVisual({
     return (
       <div
         className={`relative overflow-hidden rounded-[12px] ${
-          dark ? 'bg-[#232724]' : 'bg-[#F4F3ED]'
+          dark ? 'bg-[#232724]' : 'bg-[#F4F3ED] dark:bg-[#232724]'
         } ${className}`}
       >
         <img
@@ -39,7 +39,7 @@ export function VehicleVisual({
       className={`relative flex items-center justify-center overflow-hidden rounded-[12px] border ${
         dark
           ? 'border-[#2B302C] bg-[#1F2320] text-white'
-          : 'border-[#E4E2D9] bg-[#FAF9F5] text-[#171A18]'
+          : 'border-[#E4E2D9] bg-[#FAF9F5] text-[#171A18] dark:border-[#2B302C] dark:bg-[#1E221F] dark:text-[#F4F3ED]'
       } ${className}`}
     >
       {/* Subtle architectural grid lines */}
@@ -54,7 +54,9 @@ export function VehicleVisual({
       <div className="relative z-10 flex flex-col items-center gap-3 px-6 py-8 text-center">
         <div
           className={`flex h-14 w-14 items-center justify-center rounded-[12px] ${
-            dark ? 'bg-[#C5F467] text-[#171A18]' : 'bg-[#171A18] text-[#C5F467]'
+            dark
+              ? 'bg-[#C5F467] text-[#171A18]'
+              : 'bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]'
           }`}
         >
           {vehicleType === 'Bike' || vehicleType === 'Scooter' ? (

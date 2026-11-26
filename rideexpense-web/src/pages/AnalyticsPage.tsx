@@ -19,6 +19,7 @@ import { Card } from '../components/ui/Card';
 import { DataTable, TableColumn } from '../components/ui/DataTable';
 import { Select } from '../components/ui/Select';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { analyticsService } from '../services/analyticsService';
 import { vehicleService } from '../services/vehicleService';
 import {
@@ -35,6 +36,7 @@ type ReportGranularity = 'daily' | 'weekly' | 'monthly' | 'annual';
 
 export function AnalyticsPage() {
   const { preferences } = useAuth();
+  const { isDark } = useTheme();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -125,8 +127,8 @@ export function AnalyticsPage() {
       header: 'Vehicle',
       render: (r) => (
         <div>
-          <p className="font-bold text-[#171A18]">{r.vehicleName}</p>
-          <p className="text-xs text-[#7D827A]">{r.registrationNumber}</p>
+          <p className="font-bold text-[#171A18] dark:text-[#F4F3ED]">{r.vehicleName}</p>
+          <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">{r.registrationNumber}</p>
         </div>
       ),
     },
@@ -173,10 +175,10 @@ export function AnalyticsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
             Financial Insights
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Spending trends, cost per {distanceUnit}, fuel efficiency, vehicle comparisons, and exportable reports.
           </p>
         </div>
@@ -200,7 +202,7 @@ export function AnalyticsPage() {
           />
           <Link
             to="/budgets"
-            className="inline-flex items-center gap-1.5 rounded-[10px] border border-[#DCDAD0] bg-white px-3.5 py-2.5 text-xs font-semibold text-[#171A18] hover:bg-[#FAF9F5]"
+            className="inline-flex items-center gap-1.5 rounded-[10px] border border-[#DCDAD0] bg-white px-3.5 py-2.5 text-xs font-semibold text-[#171A18] hover:bg-[#FAF9F5] dark:border-[#343A35] dark:bg-[#1E221F] dark:text-[#F4F3ED] dark:hover:bg-[#262B27]"
           >
             <PiggyBank className="h-4 w-4" /> Budgets
           </Link>
@@ -211,23 +213,23 @@ export function AnalyticsPage() {
       </div>
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       {isLoading ? (
-        <Card className="flex items-center justify-center py-20 text-sm text-[#7D827A]">
+        <Card className="flex items-center justify-center py-20 text-sm text-[#7D827A] dark:text-[#8E938B]">
           <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Running MongoDB aggregations...
         </Card>
       ) : (
         <>
           <Card className="p-6">
             <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <h2 className="text-base font-bold text-[#171A18]">
+              <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">
                 Expenditure Trends ({granularity.charAt(0).toUpperCase() + granularity.slice(1)})
               </h2>
-              <div className="inline-flex rounded-[10px] border border-[#E4E2D9] bg-[#F4F3ED] p-1">
+              <div className="inline-flex rounded-[10px] border border-[#E4E2D9] bg-[#F4F3ED] p-1 dark:border-[#2B302C] dark:bg-[#1E221F]">
                 {(['daily', 'weekly', 'monthly', 'annual'] as ReportGranularity[]).map((tab) => (
                   <button
                     key={tab}
@@ -235,8 +237,8 @@ export function AnalyticsPage() {
                     onClick={() => setGranularity(tab)}
                     className={`rounded-[8px] px-3 py-1.5 text-xs font-semibold capitalize transition-colors ${
                       granularity === tab
-                        ? 'bg-[#171A18] text-[#C5F467]'
-                        : 'text-[#5C615A] hover:text-[#171A18]'
+                        ? 'bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]'
+                        : 'text-[#5C615A] hover:text-[#171A18] dark:text-[#A6AAA3] dark:hover:text-[#F4F3ED]'
                     }`}
                   >
                     {tab}
@@ -247,22 +249,36 @@ export function AnalyticsPage() {
 
             <div className="h-72 w-full">
               {periodChartData.length === 0 ? (
-                <div className="flex h-full items-center justify-center text-sm text-[#7D827A]">
+                <div className="flex h-full items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                   No expense data for this period.
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={periodChartData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E4E2D9" vertical={false} />
-                    <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                    <YAxis tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2B302C' : '#E4E2D9'} vertical={false} />
+                    <XAxis dataKey="label" tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                    <YAxis tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#171A18', border: 'none', borderRadius: '10px', color: '#fff' }}
+                      contentStyle={{
+                        backgroundColor: isDark ? '#232724' : '#171A18',
+                        border: isDark ? '1px solid #343A35' : 'none',
+                        borderRadius: '10px',
+                        color: '#fff',
+                      }}
                       formatter={(val: number) => formatCurrency(val, currency)}
                     />
                     <Bar dataKey="amount" radius={[8, 8, 0, 0]}>
                       {periodChartData.map((_, i) => (
-                        <Cell key={i} fill={i === periodChartData.length - 1 ? '#C5F467' : '#171A18'} />
+                        <Cell
+                          key={i}
+                          fill={
+                            i === periodChartData.length - 1
+                              ? '#C5F467'
+                              : isDark
+                                ? '#3A413C'
+                                : '#171A18'
+                          }
+                        />
                       ))}
                     </Bar>
                   </BarChart>
@@ -274,10 +290,10 @@ export function AnalyticsPage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <Card className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-base font-bold text-[#171A18]">
+                <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">
                   Fuel Efficiency ({distanceUnit}/{fuelUnit})
                 </h2>
-                <span className="rounded-[8px] bg-[#DCE8D0] px-2.5 py-1 text-xs font-bold text-[#23331A]">
+                <span className="rounded-[8px] bg-[#DCE8D0] px-2.5 py-1 text-xs font-bold text-[#23331A] dark:bg-[#1E2E18] dark:text-[#C5F467]">
                   Avg:{' '}
                   {mileage && mileage.averageMileage > 0
                     ? `${formatNumber(mileage.averageMileage, 2)} ${distanceUnit}/${fuelUnit}`
@@ -286,22 +302,29 @@ export function AnalyticsPage() {
               </div>
               <div className="h-64 w-full">
                 {(mileage?.series ?? []).length === 0 ? (
-                  <div className="flex h-full items-center justify-center text-sm text-[#7D827A]">
+                  <div className="flex h-full items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                     Record at least two full-tank fill-ups to plot fuel efficiency.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={mileage?.series ?? []}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E4E2D9" vertical={false} />
-                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                      <Tooltip />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2B302C' : '#E4E2D9'} vertical={false} />
+                      <XAxis dataKey="date" tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: isDark ? '#232724' : '#171A18',
+                          border: isDark ? '1px solid #343A35' : 'none',
+                          borderRadius: '10px',
+                          color: '#fff',
+                        }}
+                      />
                       <Line
                         type="monotone"
                         dataKey="mileage"
-                        stroke="#171A18"
+                        stroke={isDark ? '#C5F467' : '#171A18'}
                         strokeWidth={2.5}
-                        dot={{ r: 4, fill: '#C5F467', stroke: '#171A18' }}
+                        dot={{ r: 4, fill: '#C5F467', stroke: isDark ? '#0E100F' : '#171A18' }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -311,31 +334,39 @@ export function AnalyticsPage() {
 
             <Card className="p-6">
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-base font-bold text-[#171A18]">
+                <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">
                   Cost per {distanceUnit} Trend
                 </h2>
-                <span className="rounded-[8px] bg-[#171A18] px-2.5 py-1 text-xs font-bold text-[#C5F467]">
+                <span className="rounded-[8px] bg-[#171A18] px-2.5 py-1 text-xs font-bold text-[#C5F467] dark:bg-[#232724] dark:border dark:border-[#343A35]">
                   {formatCurrency(costPerKm?.overallCostPerKm ?? 0, currency)}/{distanceUnit}
                 </span>
               </div>
               <div className="h-64 w-full">
                 {(costPerKm?.timeline ?? []).length === 0 ? (
-                  <div className="flex h-full items-center justify-center text-sm text-[#7D827A]">
+                  <div className="flex h-full items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                     Log trips and expenses to compute cost per {distanceUnit}.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={costPerKm?.timeline ?? []}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E4E2D9" vertical={false} />
-                      <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                      <Tooltip formatter={(val: number) => formatCurrency(val, currency)} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2B302C' : '#E4E2D9'} vertical={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: isDark ? '#232724' : '#171A18',
+                          border: isDark ? '1px solid #343A35' : 'none',
+                          borderRadius: '10px',
+                          color: '#fff',
+                        }}
+                        formatter={(val: number) => formatCurrency(val, currency)}
+                      />
                       <Line
                         type="monotone"
                         dataKey="costPerKm"
-                        stroke="#171A18"
+                        stroke={isDark ? '#DCE8D0' : '#171A18'}
                         strokeWidth={2.5}
-                        dot={{ r: 4, fill: '#DCE8D0', stroke: '#171A18' }}
+                        dot={{ r: 4, fill: '#DCE8D0', stroke: isDark ? '#0E100F' : '#171A18' }}
                       />
                     </LineChart>
                   </ResponsiveContainer>
@@ -346,21 +377,29 @@ export function AnalyticsPage() {
 
           <div className="grid gap-6 lg:grid-cols-2">
             <Card className="p-6">
-              <h2 className="mb-4 text-base font-bold text-[#171A18]">Vehicle-Wise Comparison</h2>
+              <h2 className="mb-4 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Vehicle-Wise Comparison</h2>
               <div className="h-64 w-full">
                 {comparison.length === 0 ? (
-                  <div className="flex h-full items-center justify-center text-sm text-[#7D827A]">
+                  <div className="flex h-full items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                     No vehicles to compare.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={comparison}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#E4E2D9" vertical={false} />
-                      <XAxis dataKey="vehicleName" tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                      <YAxis tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                      <Tooltip formatter={(val: number) => formatCurrency(val, currency)} />
-                      <Legend />
-                      <Bar dataKey="fuelSpend" name="Fuel" fill="#171A18" radius={[4, 4, 0, 0]} />
+                      <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2B302C' : '#E4E2D9'} vertical={false} />
+                      <XAxis dataKey="vehicleName" tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                      <YAxis tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: isDark ? '#232724' : '#171A18',
+                          border: isDark ? '1px solid #343A35' : 'none',
+                          borderRadius: '10px',
+                          color: '#fff',
+                        }}
+                        formatter={(val: number) => formatCurrency(val, currency)}
+                      />
+                      <Legend wrapperStyle={{ color: isDark ? '#B0B4AD' : '#5C615A', fontSize: '12px' }} />
+                      <Bar dataKey="fuelSpend" name="Fuel" fill={isDark ? '#DCE8D0' : '#171A18'} radius={[4, 4, 0, 0]} />
                       <Bar dataKey="maintenanceSpend" name="Maintenance" fill="#C5F467" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -369,9 +408,9 @@ export function AnalyticsPage() {
             </Card>
 
             <Card className="p-6">
-              <h2 className="mb-4 text-base font-bold text-[#171A18]">Expense Category Analysis</h2>
+              <h2 className="mb-4 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Expense Category Analysis</h2>
               {(dashboard?.categoryDistribution ?? []).length === 0 ? (
-                <div className="flex h-64 items-center justify-center text-sm text-[#7D827A]">
+                <div className="flex h-64 items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                   No expenses recorded yet.
                 </div>
               ) : (
@@ -379,15 +418,19 @@ export function AnalyticsPage() {
                   {(dashboard?.categoryDistribution ?? []).slice(0, 7).map((cat, idx) => (
                     <div key={cat.categoryId} className="space-y-1">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="font-semibold text-[#171A18]">{cat.name}</span>
-                        <span className="tabular-nums text-[#5C615A]">
+                        <span className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">{cat.name}</span>
+                        <span className="tabular-nums text-[#5C615A] dark:text-[#B0B4AD]">
                           {formatCurrency(cat.amount, currency)} ({cat.percentage}%)
                         </span>
                       </div>
-                      <div className="h-2 w-full overflow-hidden rounded-full bg-[#F4F3ED]">
+                      <div className="h-2 w-full overflow-hidden rounded-full bg-[#F4F3ED] dark:bg-[#232724]">
                         <div
                           className={`h-full rounded-full ${
-                            idx === 0 ? 'bg-[#C5F467]' : idx === 1 ? 'bg-[#171A18]' : 'bg-[#A6AAA3]'
+                            idx === 0
+                              ? 'bg-[#C5F467]'
+                              : idx === 1
+                                ? 'bg-[#171A18] dark:bg-[#DCE8D0]'
+                                : 'bg-[#A6AAA3]'
                           }`}
                           style={{ width: `${Math.min(100, cat.percentage)}%` }}
                         />

@@ -189,10 +189,10 @@ export function TripsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
             Bike Rides &amp; GPS Telemetry
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Log petrol before riding, press Start Ride to detect location, and Stop Ride for KMs &amp; mileage.
           </p>
         </div>
@@ -216,11 +216,11 @@ export function TripsPage() {
       {lastCompletedRide && (
         <Card variant="sage" className="flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[#23331A]">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#23331A] dark:text-[#C5F467]">
               Ride Completed · {lastCompletedRide.startLocation || 'Origin'} →{' '}
               {lastCompletedRide.endLocation || 'Destination'}
             </p>
-            <div className="mt-2 flex flex-wrap gap-5 text-sm text-[#171A18]">
+            <div className="mt-2 flex flex-wrap gap-5 text-sm text-[#171A18] dark:text-[#F4F3ED]">
               <span>
                 KMs Driven:{' '}
                 <strong className="tabular-nums">
@@ -251,7 +251,7 @@ export function TripsPage() {
           <button
             type="button"
             onClick={clearLastCompletedRide}
-            className="self-start rounded-[8px] bg-[#171A18] px-3 py-1.5 text-xs font-semibold text-white sm:self-center"
+            className="self-start rounded-[8px] bg-[#171A18] px-3 py-1.5 text-xs font-semibold text-white sm:self-center dark:bg-[#C5F467] dark:text-[#171A18]"
           >
             Dismiss
           </button>
@@ -370,30 +370,30 @@ export function TripsPage() {
       </Card>
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       {/* Trip History Timeline */}
       <Card className="overflow-hidden">
-        <div className="border-b border-[#ECEAE2] px-6 py-4">
-          <h2 className="text-base font-bold text-[#171A18]">Ride History Timeline</h2>
+        <div className="border-b border-[#ECEAE2] px-6 py-4 dark:border-[#262B27]">
+          <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Ride History Timeline</h2>
         </div>
         {isLoading ? (
-          <div className="flex items-center justify-center py-14 text-sm text-[#7D827A]">
+          <div className="flex items-center justify-center py-14 text-sm text-[#7D827A] dark:text-[#8E938B]">
             <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading rides...
           </div>
         ) : trips.length === 0 ? (
           <div className="px-6 py-14 text-center">
             <Route className="mx-auto h-10 w-10 text-[#A6AAA3]" />
-            <h3 className="mt-3 text-base font-bold text-[#171A18]">No rides recorded yet</h3>
-            <p className="mt-1 text-sm text-[#5C615A]">
+            <h3 className="mt-3 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">No rides recorded yet</h3>
+            <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
               Press Start Ride or log a manual odometer trip to begin tracking.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-[#ECEAE2]">
+          <div className="divide-y divide-[#ECEAE2] dark:divide-[#262B27]">
             {trips.map((trip) => {
               const vehicle = trip.vehicleId as VehicleRef;
               const isSelected = selectedTripId === trip._id;
@@ -402,13 +402,15 @@ export function TripsPage() {
                   key={trip._id}
                   onClick={() => void inspectTripRoute(trip)}
                   className={`flex cursor-pointer flex-col justify-between gap-4 px-6 py-4 transition-colors sm:flex-row sm:items-center ${
-                    isSelected ? 'bg-[#FAF9F5]' : 'hover:bg-[#FAF9F5]'
+                    isSelected
+                      ? 'bg-[#FAF9F5] dark:bg-[#1E221F]'
+                      : 'hover:bg-[#FAF9F5] dark:hover:bg-[#1E221F]'
                   }`}
                 >
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <MapPin className="h-4 w-4 text-[#171A18]" />
-                      <span className="text-sm font-bold text-[#171A18]">
+                      <MapPin className="h-4 w-4 text-[#171A18] dark:text-[#C5F467]" />
+                      <span className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">
                         {trip.startLocation || 'Origin'} → {trip.endLocation || 'Destination'}
                       </span>
                       <Badge variant={trip.trackingType === 'gps' ? 'lime' : 'sage'}>
@@ -416,7 +418,7 @@ export function TripsPage() {
                       </Badge>
                       {trip.purpose && <Badge variant="neutral">{trip.purpose}</Badge>}
                     </div>
-                    <p className="text-xs text-[#7D827A]">
+                    <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
                       {vehicle?.vehicleName ?? 'Bike'} · {formatDate(trip.startTime)} ·{' '}
                       {trip.duration} min
                       {trip.trackingType === 'gps' ? ' · Click to plot route' : ''}
@@ -425,11 +427,11 @@ export function TripsPage() {
 
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-sm font-extrabold tabular-nums text-[#171A18]">
+                      <p className="text-sm font-extrabold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                         {formatNumber(trip.distance, 2)} {distanceUnit}
                       </p>
                       {trip.startOdometer !== undefined && trip.endOdometer !== undefined && (
-                        <p className="text-xs tabular-nums text-[#7D827A]">
+                        <p className="text-xs tabular-nums text-[#7D827A] dark:text-[#8E938B]">
                           {formatNumber(trip.startOdometer, 0)} → {formatNumber(trip.endOdometer, 0)}
                         </p>
                       )}
@@ -442,7 +444,7 @@ export function TripsPage() {
                         void handleDelete(trip._id);
                       }}
                     >
-                      <Trash2 className="h-4 w-4 text-[#B42318]" />
+                      <Trash2 className="h-4 w-4 text-[#B42318] dark:text-[#F87171]" />
                     </Button>
                   </div>
                 </div>
@@ -460,7 +462,7 @@ export function TripsPage() {
       >
         <form onSubmit={handleSubmit(onSubmitManual)} className="space-y-4">
           {formError && (
-            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
               {formError}
             </div>
           )}
@@ -501,14 +503,14 @@ export function TripsPage() {
             <Input label="Duration (minutes)" type="number" {...register('duration')} />
             <Input label="Trip Date & Time" type="datetime-local" {...register('startTime')} />
           </div>
-          <div className="rounded-[10px] bg-[#FAF9F5] px-4 py-2.5 text-xs text-[#5C615A]">
+          <div className="rounded-[10px] bg-[#FAF9F5] px-4 py-2.5 text-xs text-[#5C615A] dark:bg-[#1E221F] dark:text-[#B0B4AD]">
             Calculated Distance:{' '}
-            <strong className="text-sm tabular-nums text-[#171A18]">
+            <strong className="text-sm tabular-nums text-[#171A18] dark:text-[#C5F467]">
               {computedDistance} {distanceUnit}
             </strong>
           </div>
           <Input label="Notes" placeholder="Optional notes" {...register('notes')} />
-          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
             <Button type="button" variant="outline" onClick={() => setShowManualModal(false)}>
               Cancel
             </Button>

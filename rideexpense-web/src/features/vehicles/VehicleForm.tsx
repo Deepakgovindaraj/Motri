@@ -112,7 +112,7 @@ export function VehicleForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {serverError && (
-        <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {serverError}
         </div>
       )}
@@ -199,7 +199,7 @@ export function VehicleForm({
         />
       </div>
 
-      <div className="flex items-center justify-end gap-3 border-t border-[#ECEAE2] pt-5">
+      <div className="flex items-center justify-end gap-3 border-t border-[#ECEAE2] pt-5 dark:border-[#262B27]">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel

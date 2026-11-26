@@ -12,7 +12,7 @@ export function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F4F3ED] text-[#171A18] lg:grid lg:grid-cols-12">
+    <div className="min-h-screen bg-[#F4F3ED] text-[#171A18] lg:grid lg:grid-cols-12 dark:bg-[#0E100F] dark:text-[#F4F3ED]">
       {/* Left Graphite Editorial Panel */}
       <div className="hidden flex-col justify-between bg-[#171A18] p-12 text-white lg:col-span-5 lg:flex">
         <div>
@@ -61,23 +61,23 @@ export function AuthLayout({
       {/* Right Form Panel */}
       <div className="flex flex-col justify-between px-6 py-8 sm:px-12 lg:col-span-7">
         <div className="flex items-center justify-between lg:hidden">
-          <Link to="/" className="inline-flex items-center gap-2 text-lg font-extrabold text-[#171A18]">
-            <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#171A18] text-[#C5F467]">
+          <Link to="/" className="inline-flex items-center gap-2 text-lg font-extrabold text-[#171A18] dark:text-[#F4F3ED]">
+            <span className="flex h-8 w-8 items-center justify-center rounded-[10px] bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]">
               <Gauge className="h-4 w-4" />
             </span>
             Vehixa
           </Link>
         </div>
 
-        <div className="mx-auto my-auto w-full max-w-md rounded-[14px] border border-[#E4E2D9] bg-white p-7 sm:p-9">
+        <div className="mx-auto my-auto w-full max-w-md rounded-[14px] border border-[#E4E2D9] bg-white p-7 sm:p-9 dark:border-[#2B302C] dark:bg-[#171A18]">
           <div className="mb-7">
-            <h2 className="text-2xl font-bold tracking-tight text-[#171A18]">{title}</h2>
-            <p className="mt-1.5 text-sm text-[#686D66]">{subtitle}</p>
+            <h2 className="text-2xl font-bold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">{title}</h2>
+            <p className="mt-1.5 text-sm text-[#686D66] dark:text-[#A6AAA3]">{subtitle}</p>
           </div>
           {children}
         </div>
 
-        <p className="text-center text-xs text-[#7D827A]">
+        <p className="text-center text-xs text-[#7D827A] dark:text-[#8E938B]">
           © {new Date().getFullYear()} Vehixa. Automotive Finance &amp; Mobility Intelligence.
         </p>
       </div>

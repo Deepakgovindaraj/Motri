@@ -19,6 +19,7 @@ import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
+import { useTheme } from '../context/ThemeContext';
 import { fuelService } from '../services/fuelService';
 import { vehicleService } from '../services/vehicleService';
 import { FuelLog, PaymentMethod, Vehicle, VehicleRef } from '../types';
@@ -39,6 +40,7 @@ interface FuelFormValues {
 export function FuelPage() {
   const { preferences } = useAuth();
   const { lastPetrolPrice } = useRide();
+  const { isDark } = useTheme();
   const [logs, setLogs] = useState<FuelLog[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [summary, setSummary] = useState({ totalFuelCost: 0, totalQuantity: 0, averageMileage: 0 });
@@ -172,7 +174,7 @@ export function FuelPage() {
       key: 'date',
       header: 'Date',
       render: (log) => (
-        <span className="text-xs text-[#5C615A]">
+        <span className="text-xs text-[#5C615A] dark:text-[#B0B4AD]">
           {formatDate(log.expenseId?.expenseDate || log.createdAt)}
         </span>
       ),
@@ -182,10 +184,10 @@ export function FuelPage() {
       header: 'Bike / Vehicle',
       render: (log) => (
         <div>
-          <p className="font-semibold text-[#171A18]">
+          <p className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">
             {(log.vehicleId as VehicleRef)?.vehicleName ?? 'Vehicle'}
           </p>
-          <p className="text-xs text-[#7D827A]">{log.fuelType}</p>
+          <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">{log.fuelType}</p>
         </div>
       ),
     },
@@ -193,7 +195,7 @@ export function FuelPage() {
       key: 'qty',
       header: 'Litres & Price',
       render: (log) => (
-        <span className="text-xs tabular-nums text-[#171A18]">
+        <span className="text-xs tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
           {log.quantity} {fuelUnit} @ {formatCurrency(log.unitPrice, currency)}/{fuelUnit}
         </span>
       ),
@@ -202,7 +204,7 @@ export function FuelPage() {
       key: 'odo',
       header: 'Odometer',
       render: (log) => (
-        <span className="text-xs tabular-nums text-[#5C615A]">
+        <span className="text-xs tabular-nums text-[#5C615A] dark:text-[#B0B4AD]">
           {formatNumber(log.odometer, 0)} {distanceUnit}
         </span>
       ),
@@ -228,7 +230,7 @@ export function FuelPage() {
       header: 'Amount Paid',
       align: 'right',
       render: (log) => (
-        <span className="font-bold text-[#171A18]">
+        <span className="font-bold text-[#171A18] dark:text-[#F4F3ED]">
           {formatCurrency(log.expenseId?.amount ?? 0, log.expenseId?.currency || currency)}
         </span>
       ),
@@ -239,7 +241,7 @@ export function FuelPage() {
       align: 'right',
       render: (log) => (
         <Button variant="ghost" size="sm" onClick={() => void handleDelete(log._id)}>
-          <Trash2 className="h-4 w-4 text-[#B42318]" />
+          <Trash2 className="h-4 w-4 text-[#B42318] dark:text-[#F87171]" />
         </Button>
       ),
     },
@@ -249,10 +251,10 @@ export function FuelPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
             Petrol &amp; Fuel Analytics
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Enter petrol amount paid &amp; price per litre — litres and bike mileage calculate automatically.
           </p>
         </div>
@@ -301,25 +303,33 @@ export function FuelPage() {
         </Card>
 
         <Card className="p-6 lg:col-span-7">
-          <h2 className="mb-4 text-base font-bold text-[#171A18]">Fuel Spend Trend</h2>
+          <h2 className="mb-4 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Fuel Spend Trend</h2>
           <div className="h-52 w-full">
             {trendData.length === 0 ? (
-              <div className="flex h-full items-center justify-center text-sm text-[#7D827A]">
+              <div className="flex h-full items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                 Log petrol entries to plot fuel trends.
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={trendData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E2D9" vertical={false} />
-                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 11, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                  <Tooltip formatter={(val: number) => formatCurrency(val, currency)} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2B302C' : '#E4E2D9'} vertical={false} />
+                  <XAxis dataKey="date" tick={{ fontSize: 11, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                  <YAxis tick={{ fontSize: 11, fill: isDark ? '#A6AAA3' : '#5C615A' }} axisLine={false} tickLine={false} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: isDark ? '#232724' : '#171A18',
+                      border: isDark ? '1px solid #343A35' : 'none',
+                      borderRadius: '10px',
+                      color: '#fff',
+                    }}
+                    formatter={(val: number) => formatCurrency(val, currency)}
+                  />
                   <Area
                     type="monotone"
                     dataKey="cost"
-                    stroke="#171A18"
+                    stroke={isDark ? '#C5F467' : '#171A18'}
                     strokeWidth={2}
-                    fill="#DCE8D0"
+                    fill={isDark ? '#24351C' : '#DCE8D0'}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -329,14 +339,14 @@ export function FuelPage() {
       </div>
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       <Card className="overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-14 text-sm text-[#7D827A]">
+          <div className="flex items-center justify-center py-14 text-sm text-[#7D827A] dark:text-[#8E938B]">
             <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading petrol logs...
           </div>
         ) : (
@@ -347,8 +357,8 @@ export function FuelPage() {
             emptyState={
               <div className="px-6 py-14 text-center">
                 <Fuel className="mx-auto h-10 w-10 text-[#A6AAA3]" />
-                <h3 className="mt-3 text-base font-bold text-[#171A18]">No fuel purchases yet</h3>
-                <p className="mt-1 text-sm text-[#5C615A]">
+                <h3 className="mt-3 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">No fuel purchases yet</h3>
+                <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
                   Record your petrol fill-ups to track litres and calculate bike mileage.
                 </p>
               </div>
@@ -365,20 +375,20 @@ export function FuelPage() {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {formError && (
-            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
               {formError}
             </div>
           )}
 
           {/* Mode Toggle */}
-          <div className="inline-flex rounded-[10px] border border-[#E4E2D9] bg-[#F4F3ED] p-1">
+          <div className="inline-flex rounded-[10px] border border-[#E4E2D9] bg-[#F4F3ED] p-1 dark:border-[#2B302C] dark:bg-[#1E221F]">
             <button
               type="button"
               onClick={() => setInputMode('by_amount')}
               className={`rounded-[8px] px-3 py-1.5 text-xs font-semibold ${
                 inputMode === 'by_amount'
-                  ? 'bg-[#171A18] text-[#C5F467]'
-                  : 'text-[#5C615A]'
+                  ? 'bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]'
+                  : 'text-[#5C615A] dark:text-[#A6AAA3]'
               }`}
             >
               By Amount Paid (₹ → Litres)
@@ -388,8 +398,8 @@ export function FuelPage() {
               onClick={() => setInputMode('by_litres')}
               className={`rounded-[8px] px-3 py-1.5 text-xs font-semibold ${
                 inputMode === 'by_litres'
-                  ? 'bg-[#171A18] text-[#C5F467]'
-                  : 'text-[#5C615A]'
+                  ? 'bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]'
+                  : 'text-[#5C615A] dark:text-[#A6AAA3]'
               }`}
             >
               By Litres (L → Amount)
@@ -462,13 +472,13 @@ export function FuelPage() {
                 className="h-4 w-4 rounded border-[#DCDAD0] accent-[#171A18]"
                 {...register('isFullTank')}
               />
-              <label htmlFor="isFullTank" className="text-sm font-medium text-[#171A18]">
+              <label htmlFor="isFullTank" className="text-sm font-medium text-[#171A18] dark:text-[#F4F3ED]">
                 Full tank fill-up
               </label>
             </div>
           </div>
 
-          <div className="flex items-center justify-between rounded-[10px] bg-[#171A18] px-4 py-3 text-white">
+          <div className="flex items-center justify-between rounded-[10px] border border-[#262A27] bg-[#171A18] px-4 py-3 text-white dark:border-[#323833] dark:bg-[#121513]">
             <span className="text-xs text-[#A6AAA3]">
               {inputMode === 'by_amount' ? 'Calculated Litres' : 'Calculated Fuel Cost'}
             </span>
@@ -479,7 +489,7 @@ export function FuelPage() {
             </strong>
           </div>
 
-          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
             <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
               Cancel
             </Button>

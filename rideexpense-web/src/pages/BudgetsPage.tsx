@@ -139,10 +139,10 @@ export function BudgetsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
             Transportation Budgets
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Set monthly, fuel, vehicle, or category spending limits with alerts at 75%, 90%, and 100%.
           </p>
         </div>
@@ -152,20 +152,20 @@ export function BudgetsPage() {
       </div>
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       {isLoading ? (
-        <Card className="flex items-center justify-center py-16 text-sm text-[#7D827A]">
+        <Card className="flex items-center justify-center py-16 text-sm text-[#7D827A] dark:text-[#8E938B]">
           <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Evaluating budgets...
         </Card>
       ) : budgets.length === 0 ? (
         <Card className="px-6 py-16 text-center">
           <PiggyBank className="mx-auto h-10 w-10 text-[#A6AAA3]" />
-          <h3 className="mt-3 text-base font-bold text-[#171A18]">No budgets configured</h3>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <h3 className="mt-3 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">No budgets configured</h3>
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Create a monthly, fuel, or vehicle budget to receive automated threshold alerts.
           </p>
         </Card>
@@ -174,9 +174,9 @@ export function BudgetsPage() {
           {budgets.map((b) => {
             const barColor =
               b.alertLevel === 'exceeded_100'
-                ? 'bg-[#B42318]'
+                ? 'bg-[#B42318] dark:bg-[#F87171]'
                 : b.alertLevel === 'critical_90' || b.alertLevel === 'warning_75'
-                  ? 'bg-[#171A18]'
+                  ? 'bg-[#171A18] dark:bg-[#DCE8D0]'
                   : 'bg-[#C5F467]';
 
             return (
@@ -184,7 +184,7 @@ export function BudgetsPage() {
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-bold text-[#171A18]">
+                      <h3 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">
                         {b.vehicle?.vehicleName || 'All Vehicles'} ·{' '}
                         {b.category?.name || 'All Categories'}
                       </h3>
@@ -199,39 +199,39 @@ export function BudgetsPage() {
                         label={b.triggeredThreshold ? `${b.triggeredThreshold}% Alert` : 'On Track'}
                       />
                     </div>
-                    <p className="mt-1 text-xs text-[#7D827A]">
+                    <p className="mt-1 text-xs text-[#7D827A] dark:text-[#8E938B]">
                       {b.period.toUpperCase()} · {formatDate(b.startDate)} – {formatDate(b.endDate)}
                     </p>
                   </div>
                   <Button variant="ghost" size="sm" onClick={() => void handleDelete(b._id)}>
-                    <Trash2 className="h-4 w-4 text-[#B42318]" />
+                    <Trash2 className="h-4 w-4 text-[#B42318] dark:text-[#F87171]" />
                   </Button>
                 </div>
 
                 <div className="mt-5 space-y-2">
                   <div className="flex justify-between text-xs font-semibold">
-                    <span className="tabular-nums text-[#5C615A]">
+                    <span className="tabular-nums text-[#5C615A] dark:text-[#B0B4AD]">
                       Spent: {formatCurrency(b.amountSpent, currency)}
                     </span>
-                    <span className="tabular-nums text-[#171A18]">
+                    <span className="tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                       {b.spendingPercentage}% of {formatCurrency(b.totalBudget, currency)}
                     </span>
                   </div>
-                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#F4F3ED]">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#F4F3ED] dark:bg-[#232724]">
                     <div
                       className={`h-full rounded-full transition-all ${barColor}`}
                       style={{ width: `${Math.min(100, b.spendingPercentage)}%` }}
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="tabular-nums text-[#5C615A]">
+                    <span className="tabular-nums text-[#5C615A] dark:text-[#B0B4AD]">
                       Remaining:{' '}
-                      <strong className={b.remainingBudget < 0 ? 'text-[#B42318]' : 'text-[#171A18]'}>
+                      <strong className={b.remainingBudget < 0 ? 'text-[#B42318] dark:text-[#FCA5A5]' : 'text-[#171A18] dark:text-[#F4F3ED]'}>
                         {formatCurrency(b.remainingBudget, currency)}
                       </strong>
                     </span>
                     {b.triggeredThreshold && (
-                      <span className="inline-flex items-center gap-1 font-semibold text-[#171A18]">
+                      <span className="inline-flex items-center gap-1 font-semibold text-[#171A18] dark:text-[#C5F467]">
                         <AlertTriangle className="h-3.5 w-3.5" />
                         {b.triggeredThreshold}% threshold reached
                       </span>
@@ -252,7 +252,7 @@ export function BudgetsPage() {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {formError && (
-            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
               {formError}
             </div>
           )}
@@ -293,7 +293,7 @@ export function BudgetsPage() {
             <Input label="Start Date" type="date" {...register('startDate', { required: true })} />
             <Input label="End Date" type="date" {...register('endDate', { required: true })} />
           </div>
-          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
             <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
               Cancel
             </Button>

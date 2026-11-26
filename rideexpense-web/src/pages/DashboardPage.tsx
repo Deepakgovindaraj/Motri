@@ -39,6 +39,7 @@ import { Select } from '../components/ui/Select';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
+import { useTheme } from '../context/ThemeContext';
 import { analyticsService } from '../services/analyticsService';
 import { budgetService } from '../services/budgetService';
 import { documentService } from '../services/documentService';
@@ -66,6 +67,7 @@ type QuickActionKind = 'trip' | 'expense' | 'fuel' | 'maintenance' | null;
 
 export function DashboardPage() {
   const { user, preferences } = useAuth();
+  const { isDark } = useTheme();
   const {
     activeRide,
     liveDistanceKm,
@@ -290,13 +292,13 @@ export function DashboardPage() {
       {/* Section A – Welcome Area */}
       <section className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.09em] text-[#7D827A]">
+          <p className="text-xs font-semibold uppercase tracking-[0.09em] text-[#7D827A] dark:text-[#8E938B]">
             {todayFormatted}
           </p>
-          <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#171A18] sm:text-3xl">
+          <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-[#171A18] sm:text-3xl dark:text-[#F4F3ED]">
             Good day, {user?.name?.split(' ')[0] || 'Driver'}
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Live vehicle finance, distance telemetry, and maintenance status across your garage.
           </p>
         </div>
@@ -368,11 +370,11 @@ export function DashboardPage() {
       {lastCompletedRide && (
         <Card variant="sage" className="flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wider text-[#23331A]">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#23331A] dark:text-[#C5F467]">
               Ride Completed · {lastCompletedRide.startLocation || 'Origin'} →{' '}
               {lastCompletedRide.endLocation || 'Destination'}
             </p>
-            <p className="mt-1 text-sm font-semibold text-[#171A18]">
+            <p className="mt-1 text-sm font-semibold text-[#171A18] dark:text-[#F4F3ED]">
               {formatNumber(lastCompletedRide.distance, 2)} {distanceUnit} driven in{' '}
               {lastCompletedRide.duration} min
               {lastCompletedRide.rideSummary?.mileageKmPerUnit
@@ -386,7 +388,7 @@ export function DashboardPage() {
           <button
             type="button"
             onClick={clearLastCompletedRide}
-            className="self-start rounded-[8px] bg-[#171A18] px-3 py-1.5 text-xs font-semibold text-white sm:self-center"
+            className="self-start rounded-[8px] bg-[#171A18] px-3 py-1.5 text-xs font-semibold text-white sm:self-center dark:bg-[#C5F467] dark:text-[#171A18]"
           >
             Dismiss
           </button>
@@ -394,7 +396,7 @@ export function DashboardPage() {
       )}
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
@@ -405,11 +407,11 @@ export function DashboardPage() {
         <Card className="flex flex-col justify-between p-6 sm:p-8 lg:col-span-7">
           <div>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[#7D827A]">
+              <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[#7D827A] dark:text-[#8E938B]">
                 Monthly Vehicle Expenses
               </span>
               {momDeltaPct !== null ? (
-                <span className="inline-flex items-center gap-1 rounded-[8px] bg-[#DCE8D0] px-2.5 py-1 text-xs font-semibold text-[#23331A]">
+                <span className="inline-flex items-center gap-1 rounded-[8px] bg-[#DCE8D0] px-2.5 py-1 text-xs font-semibold text-[#23331A] dark:bg-[#1E2E18] dark:text-[#C5F467]">
                   {momDeltaPct >= 0 ? (
                     <ArrowUpRight className="h-3.5 w-3.5" />
                   ) : (
@@ -422,55 +424,55 @@ export function DashboardPage() {
               )}
             </div>
 
-            <p className="mt-4 text-4xl font-extrabold tracking-tight tabular-nums text-[#171A18] sm:text-5xl">
+            <p className="mt-4 text-4xl font-extrabold tracking-tight tabular-nums text-[#171A18] sm:text-5xl dark:text-[#F4F3ED]">
               {isLoading ? '—' : formatCurrency(s?.monthlyExpenses ?? 0, currency)}
             </p>
-            <p className="mt-2 text-sm text-[#5C615A]">
+            <p className="mt-2 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
               Today:{' '}
-              <strong className="tabular-nums text-[#171A18]">
+              <strong className="tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {formatCurrency(s?.todayExpenses ?? 0, currency)}
               </strong>{' '}
               · This week:{' '}
-              <strong className="tabular-nums text-[#171A18]">
+              <strong className="tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {formatCurrency(s?.weeklyExpenses ?? 0, currency)}
               </strong>{' '}
               · Annual:{' '}
-              <strong className="tabular-nums text-[#171A18]">
+              <strong className="tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {formatCurrency(s?.annualExpenses ?? 0, currency)}
               </strong>
             </p>
           </div>
 
-          <div className="mt-8 grid grid-cols-2 gap-4 border-t border-[#ECEAE2] pt-6 sm:grid-cols-4">
+          <div className="mt-8 grid grid-cols-2 gap-4 border-t border-[#ECEAE2] pt-6 sm:grid-cols-4 dark:border-[#262B27]">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A] dark:text-[#8E938B]">
                 Total Expenses
               </p>
-              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18]">
+              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {isLoading ? '—' : formatCurrency(s?.totalExpenses ?? 0, currency)}
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A] dark:text-[#8E938B]">
                 Total Distance
               </p>
-              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18]">
+              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {isLoading ? '—' : `${formatNumber(s?.totalDistance ?? 0, 1)} ${distanceUnit}`}
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A] dark:text-[#8E938B]">
                 Fuel Spending
               </p>
-              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18]">
+              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {isLoading ? '—' : formatCurrency(s?.fuelExpenditure ?? 0, currency)}
               </p>
             </div>
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A]">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.07em] text-[#7D827A] dark:text-[#8E938B]">
                 Maintenance
               </p>
-              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18]">
+              <p className="mt-1 text-lg font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {isLoading ? '—' : formatCurrency(s?.maintenanceExpenditure ?? 0, currency)}
               </p>
             </div>
@@ -554,8 +556,8 @@ export function DashboardPage() {
       </section>
 
       {/* Section G – Quick Actions */}
-      <section className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[#E4E2D9] bg-white px-5 py-3.5">
-        <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[#7D827A]">
+      <section className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[#E4E2D9] bg-white px-5 py-3.5 dark:border-[#2B302C] dark:bg-[#171A18]">
+        <span className="text-xs font-semibold uppercase tracking-[0.08em] text-[#7D827A] dark:text-[#8E938B]">
           Quick Actions
         </span>
         <div className="flex flex-wrap items-center gap-2">
@@ -582,34 +584,43 @@ export function DashboardPage() {
         <Card className="p-6 lg:col-span-8">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
             <div>
-              <h2 className="text-base font-bold text-[#171A18]">Monthly Spending &amp; Cost/km</h2>
-              <p className="text-xs text-[#7D827A]">
+              <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Monthly Spending &amp; Cost/km</h2>
+              <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
                 Cost per {distanceUnit}:{' '}
-                <strong className="tabular-nums text-[#171A18]">
+                <strong className="tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                   {formatCurrency(s?.costPerKm ?? 0, currency)}/{distanceUnit}
                 </strong>
               </p>
             </div>
-            <Link to="/insights" className="text-xs font-semibold text-[#171A18] hover:underline">
+            <Link to="/insights" className="text-xs font-semibold text-[#171A18] hover:underline dark:text-[#C5F467]">
               Explore Insights →
             </Link>
           </div>
 
           <div className="h-64 w-full">
             {isLoading ? (
-              <div className="flex h-full items-center justify-center text-sm text-[#7D827A]">
+              <div className="flex h-full items-center justify-center text-sm text-[#7D827A] dark:text-[#8E938B]">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Loading chart...
               </div>
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={monthSeries}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E4E2D9" vertical={false} />
-                  <XAxis dataKey="label" tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
-                  <YAxis tick={{ fontSize: 12, fill: '#5C615A' }} axisLine={false} tickLine={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={isDark ? '#2B302C' : '#E4E2D9'} vertical={false} />
+                  <XAxis
+                    dataKey="label"
+                    tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
+                  <YAxis
+                    tick={{ fontSize: 12, fill: isDark ? '#A6AAA3' : '#5C615A' }}
+                    axisLine={false}
+                    tickLine={false}
+                  />
                   <Tooltip
                     contentStyle={{
-                      backgroundColor: '#171A18',
-                      border: 'none',
+                      backgroundColor: isDark ? '#232724' : '#171A18',
+                      border: isDark ? '1px solid #343A35' : 'none',
                       borderRadius: '10px',
                       color: '#FFFFFF',
                       fontSize: '12px',
@@ -620,7 +631,13 @@ export function DashboardPage() {
                     {monthSeries.map((_, idx) => (
                       <Cell
                         key={idx}
-                        fill={idx === monthSeries.length - 1 ? '#C5F467' : '#171A18'}
+                        fill={
+                          idx === monthSeries.length - 1
+                            ? '#C5F467'
+                            : isDark
+                              ? '#3A413C'
+                              : '#171A18'
+                        }
                       />
                     ))}
                   </Bar>
@@ -632,11 +649,11 @@ export function DashboardPage() {
 
         <Card className="flex flex-col justify-between p-6 lg:col-span-4">
           <div>
-            <h2 className="text-base font-bold text-[#171A18]">Category Breakdown</h2>
-            <p className="mt-0.5 text-xs text-[#7D827A]">Distribution across recorded spend</p>
+            <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Category Breakdown</h2>
+            <p className="mt-0.5 text-xs text-[#7D827A] dark:text-[#8E938B]">Distribution across recorded spend</p>
 
             {(analytics?.categoryDistribution ?? []).length === 0 ? (
-              <p className="py-12 text-center text-xs text-[#7D827A]">
+              <p className="py-12 text-center text-xs text-[#7D827A] dark:text-[#8E938B]">
                 No expense categories recorded yet.
               </p>
             ) : (
@@ -644,15 +661,19 @@ export function DashboardPage() {
                 {(analytics?.categoryDistribution ?? []).slice(0, 5).map((cat, idx) => (
                   <div key={cat.categoryId} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#171A18]">{cat.name}</span>
-                      <span className="tabular-nums text-[#5C615A]">
+                      <span className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">{cat.name}</span>
+                      <span className="tabular-nums text-[#5C615A] dark:text-[#B0B4AD]">
                         {formatCurrency(cat.amount, currency)} ({cat.percentage}%)
                       </span>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#F4F3ED]">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#F4F3ED] dark:bg-[#232724]">
                       <div
                         className={`h-full rounded-full ${
-                          idx === 0 ? 'bg-[#C5F467]' : idx === 1 ? 'bg-[#171A18]' : 'bg-[#A6AAA3]'
+                          idx === 0
+                            ? 'bg-[#C5F467]'
+                            : idx === 1
+                              ? 'bg-[#171A18] dark:bg-[#DCE8D0]'
+                              : 'bg-[#A6AAA3]'
                         }`}
                         style={{ width: `${Math.min(100, cat.percentage)}%` }}
                       />
@@ -663,8 +684,8 @@ export function DashboardPage() {
             )}
           </div>
 
-          <div className="mt-6 border-t border-[#ECEAE2] pt-4">
-            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7D827A]">
+          <div className="mt-6 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
+            <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.08em] text-[#7D827A] dark:text-[#8E938B]">
               Spend Trend
             </p>
             <div className="h-16 w-full">
@@ -673,9 +694,13 @@ export function DashboardPage() {
                   <Line
                     type="monotone"
                     dataKey="amount"
-                    stroke="#171A18"
+                    stroke={isDark ? '#C5F467' : '#171A18'}
                     strokeWidth={2}
-                    dot={{ r: 3, fill: '#C5F467', stroke: '#171A18' }}
+                    dot={{
+                      r: 3,
+                      fill: '#C5F467',
+                      stroke: isDark ? '#0E100F' : '#171A18',
+                    }}
                   />
                 </LineChart>
               </ResponsiveContainer>
@@ -687,32 +712,32 @@ export function DashboardPage() {
       {/* Section E (Recent Activity Timeline) + Section F (Reminders & Budgets) */}
       <section className="grid gap-6 lg:grid-cols-12">
         <Card className="overflow-hidden lg:col-span-7">
-          <div className="flex items-center justify-between border-b border-[#ECEAE2] px-6 py-4">
-            <h2 className="text-base font-bold text-[#171A18]">Recent Activity Timeline</h2>
+          <div className="flex items-center justify-between border-b border-[#ECEAE2] px-6 py-4 dark:border-[#262B27]">
+            <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Recent Activity Timeline</h2>
             <div className="flex gap-4 text-xs font-semibold">
-              <Link to="/trips" className="text-[#5C615A] hover:text-[#171A18]">
+              <Link to="/trips" className="text-[#5C615A] hover:text-[#171A18] dark:text-[#A6AAA3] dark:hover:text-[#F4F3ED]">
                 Trips
               </Link>
-              <Link to="/expenses" className="text-[#171A18] hover:underline">
+              <Link to="/expenses" className="text-[#171A18] hover:underline dark:text-[#C5F467]">
                 Ledger <ArrowRight className="inline h-3.5 w-3.5" />
               </Link>
             </div>
           </div>
 
           {timeline.length === 0 ? (
-            <p className="px-6 py-12 text-center text-sm text-[#7D827A]">
+            <p className="px-6 py-12 text-center text-sm text-[#7D827A] dark:text-[#8E938B]">
               No trips or expenses logged yet. Use Quick Actions above to record your first entry.
             </p>
           ) : (
-            <div className="divide-y divide-[#ECEAE2]">
+            <div className="divide-y divide-[#ECEAE2] dark:divide-[#262B27]">
               {timeline.map((item) => (
                 <div key={item.id} className="flex items-center justify-between gap-4 px-6 py-3.5">
                   <div className="flex items-center gap-3.5">
                     <span
                       className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] ${
                         item.kind === 'trip'
-                          ? 'bg-[#DCE8D0] text-[#171A18]'
-                          : 'bg-[#F4F3ED] text-[#171A18]'
+                          ? 'bg-[#DCE8D0] text-[#171A18] dark:bg-[#1E2E18] dark:text-[#C5F467]'
+                          : 'bg-[#F4F3ED] text-[#171A18] dark:bg-[#232724] dark:text-[#F4F3ED]'
                       }`}
                     >
                       {item.kind === 'trip' ? (
@@ -722,13 +747,13 @@ export function DashboardPage() {
                       )}
                     </span>
                     <div>
-                      <p className="text-sm font-semibold text-[#171A18]">{item.title}</p>
-                      <p className="text-xs text-[#7D827A]">
+                      <p className="text-sm font-semibold text-[#171A18] dark:text-[#F4F3ED]">{item.title}</p>
+                      <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
                         {item.subtitle} · {formatDate(item.dateStr)}
                       </p>
                     </div>
                   </div>
-                  <span className="shrink-0 text-sm font-bold tabular-nums text-[#171A18]">
+                  <span className="shrink-0 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                     {item.metric}
                   </span>
                 </div>
@@ -740,18 +765,18 @@ export function DashboardPage() {
         <div className="space-y-6 lg:col-span-5">
           {/* Section F – Maintenance & Document Alerts */}
           <Card className="overflow-hidden">
-            <div className="flex items-center justify-between border-b border-[#ECEAE2] px-6 py-4">
+            <div className="flex items-center justify-between border-b border-[#ECEAE2] px-6 py-4 dark:border-[#262B27]">
               <div className="flex items-center gap-2">
-                <BellRing className="h-4 w-4 text-[#171A18]" />
-                <h2 className="text-base font-bold text-[#171A18]">Maintenance &amp; Document Alerts</h2>
+                <BellRing className="h-4 w-4 text-[#171A18] dark:text-[#C5F467]" />
+                <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Maintenance &amp; Document Alerts</h2>
               </div>
-              <Link to="/maintenance" className="text-xs font-semibold text-[#171A18] hover:underline">
+              <Link to="/maintenance" className="text-xs font-semibold text-[#171A18] hover:underline dark:text-[#C5F467]">
                 View all
               </Link>
             </div>
-            <div className="divide-y divide-[#ECEAE2]">
+            <div className="divide-y divide-[#ECEAE2] dark:divide-[#262B27]">
               {reminders.length === 0 && expiringDocs.length === 0 ? (
-                <p className="px-6 py-8 text-center text-xs text-[#7D827A]">
+                <p className="px-6 py-8 text-center text-xs text-[#7D827A] dark:text-[#8E938B]">
                   All vehicles and documents are up to date.
                 </p>
               ) : (
@@ -759,10 +784,10 @@ export function DashboardPage() {
                   {reminders.slice(0, 3).map((rem) => (
                     <div key={rem._id} className="flex items-center justify-between px-6 py-3.5">
                       <div>
-                        <p className="text-sm font-semibold text-[#171A18]">
+                        <p className="text-sm font-semibold text-[#171A18] dark:text-[#F4F3ED]">
                           {rem.vehicle.vehicleName} · {rem.serviceType}
                         </p>
-                        <p className="text-xs text-[#7D827A]">
+                        <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
                           {rem.reasons.join(' · ') || 'Scheduled service'}
                         </p>
                       </div>
@@ -775,10 +800,10 @@ export function DashboardPage() {
                   {expiringDocs.slice(0, 2).map((doc) => (
                     <div key={doc._id} className="flex items-center justify-between px-6 py-3.5">
                       <div className="flex items-center gap-2.5">
-                        <FileWarning className="h-4 w-4 text-[#B42318]" />
+                        <FileWarning className="h-4 w-4 text-[#B42318] dark:text-[#FCA5A5]" />
                         <div>
-                          <p className="text-sm font-semibold text-[#171A18]">{doc.title}</p>
-                          <p className="text-xs text-[#7D827A]">
+                          <p className="text-sm font-semibold text-[#171A18] dark:text-[#F4F3ED]">{doc.title}</p>
+                          <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
                             {doc.documentType} · Expires {formatDate(doc.expiryDate)}
                           </p>
                         </div>
@@ -794,13 +819,13 @@ export function DashboardPage() {
           {/* Active Budgets Snapshot */}
           <Card className="p-6">
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-base font-bold text-[#171A18]">Budget Utilization</h2>
-              <Link to="/budgets" className="text-xs font-semibold text-[#171A18] hover:underline">
+              <h2 className="text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">Budget Utilization</h2>
+              <Link to="/budgets" className="text-xs font-semibold text-[#171A18] hover:underline dark:text-[#C5F467]">
                 Manage →
               </Link>
             </div>
             {budgets.length === 0 ? (
-              <p className="py-4 text-center text-xs text-[#7D827A]">
+              <p className="py-4 text-center text-xs text-[#7D827A] dark:text-[#8E938B]">
                 No budgets set. Create one in Budgets to track 75%/90%/100% thresholds.
               </p>
             ) : (
@@ -808,21 +833,21 @@ export function DashboardPage() {
                 {budgets.slice(0, 3).map((b) => (
                   <div key={b._id} className="space-y-1.5">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-semibold text-[#171A18]">
+                      <span className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">
                         {b.vehicle?.vehicleName || b.category?.name || 'Overall'} ({b.period})
                       </span>
-                      <span className="tabular-nums text-[#5C615A]">
+                      <span className="tabular-nums text-[#5C615A] dark:text-[#B0B4AD]">
                         {b.spendingPercentage}% · {formatCurrency(b.amountSpent, currency)} /{' '}
                         {formatCurrency(b.totalBudget, currency)}
                       </span>
                     </div>
-                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#F4F3ED]">
+                    <div className="h-2 w-full overflow-hidden rounded-full bg-[#F4F3ED] dark:bg-[#232724]">
                       <div
                         className={`h-full rounded-full ${
                           b.alertLevel === 'exceeded_100'
-                            ? 'bg-[#B42318]'
+                            ? 'bg-[#B42318] dark:bg-[#F87171]'
                             : b.alertLevel === 'critical_90' || b.alertLevel === 'warning_75'
-                              ? 'bg-[#171A18]'
+                              ? 'bg-[#171A18] dark:bg-[#DCE8D0]'
                               : 'bg-[#C5F467]'
                         }`}
                         style={{ width: `${Math.min(100, b.spendingPercentage)}%` }}
@@ -853,7 +878,7 @@ export function DashboardPage() {
       >
         <form onSubmit={submitQuickAction} className="space-y-4">
           {modalError && (
-            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
               {modalError}
             </div>
           )}
@@ -978,9 +1003,9 @@ export function DashboardPage() {
                 onChange={(e) => setQaUnitPrice(e.target.value)}
               />
               {Number(qaQty) > 0 && Number(qaUnitPrice) > 0 && (
-                <div className="sm:col-span-2 rounded-[10px] bg-[#FAF9F5] px-3.5 py-2 text-xs text-[#5C615A]">
+                <div className="sm:col-span-2 rounded-[10px] bg-[#FAF9F5] px-3.5 py-2 text-xs text-[#5C615A] dark:bg-[#1E221F] dark:text-[#B0B4AD]">
                   Calculated Litres:{' '}
-                  <strong className="tabular-nums text-[#171A18]">
+                  <strong className="tabular-nums text-[#171A18] dark:text-[#C5F467]">
                     {(Number(qaQty) / Number(qaUnitPrice)).toFixed(2)} {fuelUnit}
                   </strong>
                 </div>
@@ -1028,7 +1053,7 @@ export function DashboardPage() {
             </div>
           )}
 
-          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
             <Button type="button" variant="outline" onClick={() => setQuickModal(null)}>
               Cancel
             </Button>

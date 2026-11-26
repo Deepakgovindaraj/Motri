@@ -76,26 +76,26 @@ export function StopRideModal({
     >
       <form onSubmit={handleStop} className="space-y-4">
         {error && (
-          <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+          <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
             {error}
           </div>
         )}
 
-        <div className="rounded-[10px] bg-[#171A18] px-4 py-3 text-white">
+        <div className="rounded-[10px] border border-[#262A27] bg-[#171A18] px-4 py-3 text-white dark:border-[#323833] dark:bg-[#121513]">
           <p className="text-xs text-[#A6AAA3]">GPS Tracked Distance</p>
           <p className="mt-0.5 text-2xl font-extrabold tabular-nums text-[#C5F467]">
             {formatNumber(liveDistanceKm, 2)} {distanceUnit}
           </p>
         </div>
 
-        <div className="rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-3.5">
-          <div className="mb-1.5 flex items-center justify-between text-xs font-semibold text-[#5C615A]">
+        <div className="rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-3.5 dark:border-[#2B302C] dark:bg-[#1E221F]">
+          <div className="mb-1.5 flex items-center justify-between text-xs font-semibold text-[#5C615A] dark:text-[#B0B4AD]">
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-3.5 w-3.5 text-[#171A18]" />
+              <MapPin className="h-3.5 w-3.5 text-[#171A18] dark:text-[#C5F467]" />
               Destination Location
             </span>
             {detecting && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-[#7D827A]">
+              <span className="inline-flex items-center gap-1 text-[11px] text-[#7D827A] dark:text-[#8E938B]">
                 <Navigation className="h-3 w-3 animate-pulse" /> Detecting...
               </span>
             )}
@@ -105,7 +105,7 @@ export function StopRideModal({
             value={endLocation}
             onChange={(e) => setEndLocation(e.target.value)}
             placeholder="Detected destination or enter place name"
-            className="w-full rounded-[8px] border border-[#DCDAD0] bg-white px-3 py-2 text-sm text-[#171A18] placeholder-[#A6AAA3] focus:border-[#171A18] focus:outline-none"
+            className="w-full rounded-[8px] border border-[#DCDAD0] bg-white px-3 py-2 text-sm text-[#171A18] placeholder-[#A6AAA3] focus:border-[#171A18] focus:outline-none dark:border-[#343A35] dark:bg-[#171A18] dark:text-[#F4F3ED] dark:placeholder-[#7D827A] dark:focus:border-[#C5F467]"
           />
         </div>
 
@@ -130,7 +130,7 @@ export function StopRideModal({
           onChange={(e) => setNotes(e.target.value)}
         />
 
-        <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+        <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
           <Button type="button" variant="outline" onClick={onClose}>
             Keep Riding
           </Button>

@@ -9,15 +9,15 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<NonNullable<ButtonProps['variant']>, string> = {
   primary:
-    'bg-[#C5F467] text-[#171A18] hover:bg-[#B4E94D] focus:ring-[#171A18] font-semibold border border-[#B4E94D]/60 disabled:opacity-60',
+    'bg-[#C5F467] text-[#171A18] hover:bg-[#B4E94D] focus:ring-[#171A18] dark:focus:ring-[#C5F467] font-semibold border border-[#B4E94D]/60 disabled:opacity-60',
   secondary:
-    'bg-[#171A18] text-white hover:bg-[#232724] focus:ring-[#171A18] font-semibold disabled:opacity-60',
+    'bg-[#171A18] text-white hover:bg-[#232724] focus:ring-[#171A18] dark:bg-[#262B27] dark:text-[#F4F3ED] dark:border dark:border-[#363D38] dark:hover:bg-[#313732] dark:focus:ring-[#C5F467] font-semibold disabled:opacity-60',
   outline:
-    'border border-[#DCDAD0] bg-white text-[#171A18] hover:bg-[#F4F3ED] focus:ring-[#171A18]',
+    'border border-[#DCDAD0] bg-white text-[#171A18] hover:bg-[#F4F3ED] focus:ring-[#171A18] dark:border-[#343A35] dark:bg-[#1E221F] dark:text-[#F4F3ED] dark:hover:bg-[#262B27] dark:focus:ring-[#C5F467]',
   danger:
-    'border border-[#F3C6C2] bg-[#FEF3F2] text-[#B42318] hover:bg-[#FEE4E2] focus:ring-[#B42318]',
+    'border border-[#F3C6C2] bg-[#FEF3F2] text-[#B42318] hover:bg-[#FEE4E2] focus:ring-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5] dark:hover:bg-[#3B1D1B]',
   ghost:
-    'text-[#5C615A] hover:bg-[#EAE8DF] hover:text-[#171A18] focus:ring-[#171A18]',
+    'text-[#5C615A] hover:bg-[#EAE8DF] hover:text-[#171A18] focus:ring-[#171A18] dark:text-[#A6AAA3] dark:hover:bg-[#232724] dark:hover:text-[#F4F3ED] dark:focus:ring-[#C5F467]',
 };
 
 const sizeClasses: Record<NonNullable<ButtonProps['size']>, string> = {
@@ -38,7 +38,7 @@ export function Button({
   return (
     <button
       disabled={disabled || isLoading}
-      className={`inline-flex items-center justify-center gap-2 rounded-[10px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#F4F3ED] disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-[10px] font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#F4F3ED] dark:focus:ring-offset-[#0E100F] disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
       {...rest}
     >
       {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}

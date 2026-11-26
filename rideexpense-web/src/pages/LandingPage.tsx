@@ -31,11 +31,11 @@ const capabilities = [
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F4F3ED] text-[#171A18]">
-      <header className="border-b border-[#E4E2D9] bg-[#F4F3ED]/95 backdrop-blur-md">
+    <div className="min-h-screen bg-[#F4F3ED] text-[#171A18] dark:bg-[#0E100F] dark:text-[#F4F3ED]">
+      <header className="border-b border-[#E4E2D9] bg-[#F4F3ED]/95 backdrop-blur-md dark:border-[#2B302C] dark:bg-[#0E100F]/95">
         <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between px-4 sm:px-6 lg:px-10">
           <Link to="/" className="flex items-center gap-2.5 text-lg font-extrabold tracking-tight">
-            <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#171A18] text-[#C5F467]">
+            <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]">
               <Gauge className="h-5 w-5" />
             </span>
             Vehixa
@@ -44,7 +44,7 @@ export function LandingPage() {
           <div className="flex items-center gap-2.5">
             <Link
               to="/login"
-              className="rounded-[10px] px-4 py-2 text-sm font-semibold text-[#171A18] transition-colors hover:bg-[#E8E6DC]"
+              className="rounded-[10px] px-4 py-2 text-sm font-semibold text-[#171A18] transition-colors hover:bg-[#E8E6DC] dark:text-[#F4F3ED] dark:hover:bg-[#232724]"
             >
               Sign in
             </Link>
@@ -61,15 +61,15 @@ export function LandingPage() {
       <main className="mx-auto max-w-[1360px] px-4 py-14 sm:px-6 lg:px-10 lg:py-20">
         {/* Asymmetric Hero */}
         <div className="grid items-stretch gap-6 lg:grid-cols-12">
-          <div className="flex flex-col justify-between rounded-[14px] border border-[#E4E2D9] bg-white p-8 sm:p-12 lg:col-span-7">
+          <div className="flex flex-col justify-between rounded-[14px] border border-[#E4E2D9] bg-white p-8 sm:p-12 lg:col-span-7 dark:border-[#2B302C] dark:bg-[#171A18]">
             <div>
-              <span className="inline-flex items-center rounded-[8px] bg-[#DCE8D0] px-3 py-1 text-xs font-semibold text-[#23331A]">
+              <span className="inline-flex items-center rounded-[8px] bg-[#DCE8D0] px-3 py-1 text-xs font-semibold text-[#23331A] dark:bg-[#1E2E18] dark:text-[#C5F467]">
                 Bike Travel &amp; Expense Intelligence
               </span>
-              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-[#171A18] sm:text-5xl">
+              <h1 className="mt-6 text-4xl font-extrabold tracking-tight text-[#171A18] sm:text-5xl dark:text-[#F4F3ED]">
                 Every bike ride, petrol fill-up, and kilometre accounted for.
               </h1>
-              <p className="mt-5 max-w-xl text-base leading-relaxed text-[#5C615A]">
+              <p className="mt-5 max-w-xl text-base leading-relaxed text-[#5C615A] dark:text-[#B0B4AD]">
                 Built for riders and daily travel. Log petrol by amount paid, tap Start Ride to
                 detect your route from start to destination, and calculate KMs driven, mileage, and
                 every bike expense in one place.
@@ -86,7 +86,7 @@ export function LandingPage() {
               </Link>
               <Link
                 to="/login"
-                className="inline-flex items-center rounded-[10px] border border-[#DCDAD0] bg-[#FAF9F5] px-6 py-3 text-sm font-semibold text-[#171A18] transition-colors hover:bg-[#EAE8DF]"
+                className="inline-flex items-center rounded-[10px] border border-[#DCDAD0] bg-[#FAF9F5] px-6 py-3 text-sm font-semibold text-[#171A18] transition-colors hover:bg-[#EAE8DF] dark:border-[#343A35] dark:bg-[#1E221F] dark:text-[#F4F3ED] dark:hover:bg-[#262B27]"
               >
                 Sign in
               </Link>
@@ -94,7 +94,7 @@ export function LandingPage() {
           </div>
 
           {/* Graphite Contrast Feature Card */}
-          <div className="flex flex-col justify-between rounded-[14px] bg-[#171A18] p-8 text-white sm:p-10 lg:col-span-5">
+          <div className="flex flex-col justify-between rounded-[14px] border border-[#262A27] bg-[#171A18] p-8 text-white sm:p-10 lg:col-span-5 dark:border-[#323833] dark:bg-[#151816]">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#C5F467]">
                 Real-Time Cost Intelligence
@@ -132,13 +132,13 @@ export function LandingPage() {
           {capabilities.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="rounded-[12px] border border-[#E4E2D9] bg-white p-6"
+              className="rounded-[12px] border border-[#E4E2D9] bg-white p-6 dark:border-[#2B302C] dark:bg-[#171A18]"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#F4F3ED] text-[#171A18]">
+              <div className="flex h-10 w-10 items-center justify-center rounded-[10px] bg-[#F4F3ED] text-[#171A18] dark:bg-[#232724] dark:text-[#C5F467]">
                 <Icon className="h-5 w-5" />
               </div>
-              <h3 className="mt-4 text-sm font-bold text-[#171A18]">{title}</h3>
-              <p className="mt-1.5 text-xs leading-relaxed text-[#5C615A]">{description}</p>
+              <h3 className="mt-4 text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">{title}</h3>
+              <p className="mt-1.5 text-xs leading-relaxed text-[#5C615A] dark:text-[#B0B4AD]">{description}</p>
             </div>
           ))}
         </div>

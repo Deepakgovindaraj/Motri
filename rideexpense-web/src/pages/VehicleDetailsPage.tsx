@@ -69,7 +69,7 @@ export function VehicleDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20 text-sm text-[#7D827A]">
+      <div className="flex items-center justify-center py-20 text-sm text-[#7D827A] dark:text-[#8E938B]">
         <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading vehicle...
       </div>
     );
@@ -78,8 +78,8 @@ export function VehicleDetailsPage() {
   if (error || !vehicle) {
     return (
       <Card className="mx-auto max-w-lg p-8 text-center">
-        <p className="text-sm font-medium text-[#B42318]">{error || 'Vehicle not found'}</p>
-        <Link to="/vehicles" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#171A18] underline">
+        <p className="text-sm font-medium text-[#B42318] dark:text-[#FCA5A5]">{error || 'Vehicle not found'}</p>
+        <Link to="/vehicles" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#171A18] underline dark:text-[#C5F467]">
           <ArrowLeft className="h-4 w-4" /> Return to Garage
         </Link>
       </Card>
@@ -94,17 +94,17 @@ export function VehicleDetailsPage() {
         <div>
           <Link
             to="/vehicles"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#5C615A] hover:text-[#171A18]"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#5C615A] hover:text-[#171A18] dark:text-[#A6AAA3] dark:hover:text-[#F4F3ED]"
           >
             <ArrowLeft className="h-4 w-4" /> Back to Garage
           </Link>
           <div className="mt-2 flex items-center gap-3">
-            <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
               {vehicle.vehicleName}
             </h1>
             <Badge variant="sage">{vehicle.vehicleType}</Badge>
           </div>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             {vehicle.brand} {vehicle.model} · {vehicle.registrationNumber}
           </p>
         </div>
@@ -123,7 +123,7 @@ export function VehicleDetailsPage() {
 
       {isEditing ? (
         <Card className="p-6 sm:p-8">
-          <h2 className="mb-6 text-lg font-bold text-[#171A18]">Edit Specifications</h2>
+          <h2 className="mb-6 text-lg font-bold text-[#171A18] dark:text-[#F4F3ED]">Edit Specifications</h2>
           <VehicleForm
             initialValues={vehicle}
             submitLabel="Update Vehicle"
@@ -142,48 +142,48 @@ export function VehicleDetailsPage() {
           />
           <dl className="grid gap-6 sm:grid-cols-3">
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Registration</dt>
-              <dd className="mt-1 text-sm font-bold text-[#171A18]">{vehicle.registrationNumber}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Registration</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">{vehicle.registrationNumber}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Make &amp; Model</dt>
-              <dd className="mt-1 text-sm font-bold text-[#171A18]">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Make &amp; Model</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">
                 {vehicle.brand} {vehicle.model}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Year</dt>
-              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">{vehicle.manufacturingYear}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Year</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">{vehicle.manufacturingYear}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Fuel Type</dt>
-              <dd className="mt-1 text-sm font-bold text-[#171A18]">{vehicle.fuelType}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Fuel Type</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">{vehicle.fuelType}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Current Odometer</dt>
-              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Current Odometer</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {formatNumber(vehicle.currentOdometer, 0)} {distanceUnit}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Expected Mileage</dt>
-              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Expected Mileage</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {vehicle.expectedMileage ? `${vehicle.expectedMileage} ${distanceUnit}/unit` : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Tank / Battery</dt>
-              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Tank / Battery</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                 {vehicle.tankCapacity ? `${vehicle.tankCapacity} units` : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Purchase Date</dt>
-              <dd className="mt-1 text-sm font-bold text-[#171A18]">{formatDate(vehicle.purchaseDate)}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Purchase Date</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">{formatDate(vehicle.purchaseDate)}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Registered On</dt>
-              <dd className="mt-1 text-sm font-bold text-[#171A18]">{formatDate(vehicle.createdAt)}</dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A] dark:text-[#8E938B]">Registered On</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">{formatDate(vehicle.createdAt)}</dd>
             </div>
           </dl>
         </Card>

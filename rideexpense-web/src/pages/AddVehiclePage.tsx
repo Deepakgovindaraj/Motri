@@ -26,15 +26,15 @@ export function AddVehiclePage() {
       <div>
         <Link
           to="/vehicles"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#5C615A] hover:text-[#171A18]"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#5C615A] hover:text-[#171A18] dark:text-[#A6AAA3] dark:hover:text-[#F4F3ED]"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Garage
         </Link>
-        <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-[#171A18]">
+        <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
           Register Vehicle
         </h1>
-        <p className="mt-1 text-sm text-[#5C615A]">
+        <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
           Add technical specifications, fuel profile, and initial odometer reading.
         </p>
       </div>

@@ -123,8 +123,8 @@ export function VehiclesPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">Garage Showcase</h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">Garage Showcase</h1>
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Inspect specifications, odometer milestones, insurance status, and vehicle-level costs.
           </p>
         </div>
@@ -143,7 +143,7 @@ export function VehiclesPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search vehicle, reg no, brand..."
-              className="block w-full rounded-[10px] border border-[#DCDAD0] bg-white py-2.5 pl-9 pr-3.5 text-sm text-[#171A18] placeholder-[#A6AAA3] focus:border-[#171A18] focus:outline-none"
+              className="block w-full rounded-[10px] border border-[#DCDAD0] bg-white py-2.5 pl-9 pr-3.5 text-sm text-[#171A18] placeholder-[#A6AAA3] focus:border-[#171A18] focus:outline-none dark:border-[#343A35] dark:bg-[#1E221F] dark:text-[#F4F3ED] dark:placeholder-[#7D827A] dark:focus:border-[#C5F467]"
             />
           </div>
           <Select
@@ -174,20 +174,20 @@ export function VehiclesPage() {
       </Card>
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       {isLoading ? (
-        <Card className="flex items-center justify-center py-20 text-sm text-[#7D827A]">
+        <Card className="flex items-center justify-center py-20 text-sm text-[#7D827A] dark:text-[#8E938B]">
           <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading garage...
         </Card>
       ) : !activeVehicle ? (
         <Card className="px-6 py-16 text-center">
           <Car className="mx-auto h-10 w-10 text-[#A6AAA3]" />
-          <h3 className="mt-3 text-base font-bold text-[#171A18]">No vehicles in your garage</h3>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <h3 className="mt-3 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">No vehicles in your garage</h3>
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Register your first car, motorcycle, scooter, or EV to start tracking.
           </p>
           <Button className="mt-5" onClick={() => navigate('/vehicles/new')}>
@@ -207,12 +207,12 @@ export function VehiclesPage() {
                   onClick={() => setSelectedId(v._id)}
                   className={`shrink-0 rounded-[10px] border px-4 py-2 text-left transition-colors ${
                     isSelected
-                      ? 'border-[#171A18] bg-[#171A18] text-white'
-                      : 'border-[#E4E2D9] bg-white text-[#171A18] hover:bg-[#FAF9F5]'
+                      ? 'border-[#171A18] bg-[#171A18] text-white dark:border-[#C5F467] dark:bg-[#232724]'
+                      : 'border-[#E4E2D9] bg-white text-[#171A18] hover:bg-[#FAF9F5] dark:border-[#2B302C] dark:bg-[#171A18] dark:text-[#F4F3ED] dark:hover:bg-[#1E221F]'
                   }`}
                 >
                   <p className="text-xs font-bold">{v.vehicleName}</p>
-                  <p className={`text-[11px] ${isSelected ? 'text-[#C5F467]' : 'text-[#7D827A]'}`}>
+                  <p className={`text-[11px] ${isSelected ? 'text-[#C5F467]' : 'text-[#7D827A] dark:text-[#8E938B]'}`}>
                     {v.registrationNumber}
                   </p>
                 </button>
@@ -289,31 +289,31 @@ export function VehiclesPage() {
             {/* Right Column: Expense Analysis + Insurance + Maintenance History */}
             <div className="space-y-6 lg:col-span-5">
               <Card className="p-6">
-                <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-[#7D827A]">
+                <h3 className="text-sm font-bold uppercase tracking-[0.08em] text-[#7D827A] dark:text-[#8E938B]">
                   Vehicle Financial Analysis
                 </h3>
-                <p className="mt-3 text-3xl font-extrabold tabular-nums text-[#171A18]">
+                <p className="mt-3 text-3xl font-extrabold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                   {formatCurrency(activeMetrics?.totalSpend ?? 0, currency)}
                 </p>
-                <p className="mt-0.5 text-xs text-[#7D827A]">
+                <p className="mt-0.5 text-xs text-[#7D827A] dark:text-[#8E938B]">
                   Cumulative spend across {activeMetrics?.expenseCount ?? 0} transactions
                 </p>
-                <div className="mt-5 grid grid-cols-2 gap-4 border-t border-[#ECEAE2] pt-4 text-xs">
+                <div className="mt-5 grid grid-cols-2 gap-4 border-t border-[#ECEAE2] pt-4 text-xs dark:border-[#262B27]">
                   <div>
-                    <p className="text-[#7D827A]">Fuel Spend</p>
-                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18]">
+                    <p className="text-[#7D827A] dark:text-[#8E938B]">Fuel Spend</p>
+                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                       {formatCurrency(activeMetrics?.fuelSpend ?? 0, currency)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[#7D827A]">Maintenance</p>
-                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18]">
+                    <p className="text-[#7D827A] dark:text-[#8E938B]">Maintenance</p>
+                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                       {formatCurrency(activeMetrics?.maintenanceSpend ?? 0, currency)}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[#7D827A]">Measured Mileage</p>
-                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18]">
+                    <p className="text-[#7D827A] dark:text-[#8E938B]">Measured Mileage</p>
+                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                       {activeMetrics?.averageMileage
                         ? `${activeMetrics.averageMileage} ${distanceUnit}/${fuelUnit}`
                         : activeVehicle.expectedMileage
@@ -322,8 +322,8 @@ export function VehiclesPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-[#7D827A]">Cost per {distanceUnit}</p>
-                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18]">
+                    <p className="text-[#7D827A] dark:text-[#8E938B]">Cost per {distanceUnit}</p>
+                    <p className="mt-0.5 text-sm font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                       {formatCurrency(activeMetrics?.costPerKm ?? 0, currency)}
                     </p>
                   </div>
@@ -333,18 +333,18 @@ export function VehiclesPage() {
               <Card className="p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <ShieldCheck className="h-4 w-4 text-[#171A18]" />
-                    <h3 className="text-sm font-bold text-[#171A18]">Insurance Status</h3>
+                    <ShieldCheck className="h-4 w-4 text-[#171A18] dark:text-[#C5F467]" />
+                    <h3 className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">Insurance Status</h3>
                   </div>
-                  <Link to="/documents" className="text-xs font-semibold text-[#171A18] hover:underline">
+                  <Link to="/documents" className="text-xs font-semibold text-[#171A18] hover:underline dark:text-[#C5F467]">
                     Documents →
                   </Link>
                 </div>
                 {activeInsurance ? (
                   <div className="mt-3 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-semibold text-[#171A18]">{activeInsurance.title}</p>
-                      <p className="text-xs text-[#7D827A]">
+                      <p className="text-sm font-semibold text-[#171A18] dark:text-[#F4F3ED]">{activeInsurance.title}</p>
+                      <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
                         Expires {formatDate(activeInsurance.expiryDate)}
                       </p>
                     </div>
@@ -364,37 +364,37 @@ export function VehiclesPage() {
                     />
                   </div>
                 ) : (
-                  <p className="mt-3 text-xs text-[#7D827A]">
+                  <p className="mt-3 text-xs text-[#7D827A] dark:text-[#8E938B]">
                     No insurance document linked. Add one in Documents to track expiry.
                   </p>
                 )}
               </Card>
 
               <Card className="overflow-hidden">
-                <div className="flex items-center justify-between border-b border-[#ECEAE2] px-6 py-4">
+                <div className="flex items-center justify-between border-b border-[#ECEAE2] px-6 py-4 dark:border-[#262B27]">
                   <div className="flex items-center gap-2">
-                    <Wrench className="h-4 w-4 text-[#171A18]" />
-                    <h3 className="text-sm font-bold text-[#171A18]">Maintenance History</h3>
+                    <Wrench className="h-4 w-4 text-[#171A18] dark:text-[#C5F467]" />
+                    <h3 className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">Maintenance History</h3>
                   </div>
-                  <Link to="/maintenance" className="text-xs font-semibold text-[#171A18] hover:underline">
+                  <Link to="/maintenance" className="text-xs font-semibold text-[#171A18] hover:underline dark:text-[#C5F467]">
                     All →
                   </Link>
                 </div>
                 {activeMaintenance.length === 0 ? (
-                  <p className="px-6 py-6 text-center text-xs text-[#7D827A]">
+                  <p className="px-6 py-6 text-center text-xs text-[#7D827A] dark:text-[#8E938B]">
                     No service records for this vehicle yet.
                   </p>
                 ) : (
-                  <div className="divide-y divide-[#ECEAE2]">
+                  <div className="divide-y divide-[#ECEAE2] dark:divide-[#262B27]">
                     {activeMaintenance.slice(0, 4).map((m) => (
                       <div key={m._id} className="flex items-center justify-between px-6 py-3 text-xs">
                         <div>
-                          <p className="font-semibold text-[#171A18]">{m.serviceType}</p>
-                          <p className="text-[#7D827A]">
+                          <p className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">{m.serviceType}</p>
+                          <p className="text-[#7D827A] dark:text-[#8E938B]">
                             {formatDate(m.serviceDate)} · {formatNumber(m.odometer, 0)} {distanceUnit}
                           </p>
                         </div>
-                        <span className="font-bold tabular-nums text-[#171A18]">
+                        <span className="font-bold tabular-nums text-[#171A18] dark:text-[#F4F3ED]">
                           {formatCurrency(m.expenseId?.amount ?? 0, currency)}
                         </span>
                       </div>

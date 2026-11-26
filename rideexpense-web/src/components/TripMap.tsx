@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import { Layers } from 'lucide-react';
+import { useTheme } from '../context/ThemeContext';
 import { TripLocationPoint } from '../types';
 
 type MapLayerMode = 'street' | 'satellite';
@@ -12,6 +13,7 @@ export function TripMap({
   points: TripLocationPoint[];
   className?: string;
 }) {
+  const { isDark } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const tileLayerRef = useRef<L.TileLayer | null>(null);
@@ -93,14 +95,14 @@ export function TripMap({
     if (points.length === 0) return;
 
     const latLngs = points.map((p) => [p.latitude, p.longitude] as [number, number]);
-    const isSat = mode === 'satellite';
+    const useLimeRoute = mode === 'satellite' || isDark;
 
     if (latLngs.length >= 2) {
-      if (isSat) {
+      if (useLimeRoute) {
         L.polyline(latLngs, { color: '#171A18', weight: 6, opacity: 0.7 }).addTo(group);
       }
       const polyline = L.polyline(latLngs, {
-        color: isSat ? '#C5F467' : '#171A18',
+        color: useLimeRoute ? '#C5F467' : '#171A18',
         weight: 4,
         opacity: 0.95,
       }).addTo(group);
@@ -130,24 +132,26 @@ export function TripMap({
         .bindPopup('End')
         .addTo(group);
     }
-  }, [points, mode]);
+  }, [points, mode, isDark]);
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[12px] border border-[#E4E2D9] bg-[#FAF9F5] ${className}`}
+      className={`relative overflow-hidden rounded-[12px] border border-[#E4E2D9] bg-[#FAF9F5] dark:border-[#2B302C] dark:bg-[#171A18] ${
+        mode === 'street' ? 'trip-map-street' : ''
+      } ${className}`}
     >
       <div ref={containerRef} className="h-full w-full" />
 
       {/* Street / Satellite Mode Switcher */}
-      <div className="absolute right-3 top-3 z-[400] inline-flex items-center gap-1 rounded-[10px] border border-[#E4E2D9] bg-white/95 p-1 shadow-sm backdrop-blur-sm">
-        <Layers className="ml-1.5 mr-1 h-3.5 w-3.5 text-[#5C615A]" />
+      <div className="absolute right-3 top-3 z-[400] inline-flex items-center gap-1 rounded-[10px] border border-[#E4E2D9] bg-white/95 p-1 shadow-sm backdrop-blur-sm dark:border-[#343A35] dark:bg-[#171A18]/95">
+        <Layers className="ml-1.5 mr-1 h-3.5 w-3.5 text-[#5C615A] dark:text-[#A6AAA3]" />
         <button
           type="button"
           onClick={() => setMode('street')}
           className={`rounded-[7px] px-2.5 py-1 text-xs font-semibold transition-colors ${
             mode === 'street'
-              ? 'bg-[#171A18] text-[#C5F467]'
-              : 'text-[#5C615A] hover:text-[#171A18]'
+              ? 'bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]'
+              : 'text-[#5C615A] hover:text-[#171A18] dark:text-[#A6AAA3] dark:hover:text-[#F4F3ED]'
           }`}
         >
           Map
@@ -157,8 +161,8 @@ export function TripMap({
           onClick={() => setMode('satellite')}
           className={`rounded-[7px] px-2.5 py-1 text-xs font-semibold transition-colors ${
             mode === 'satellite'
-              ? 'bg-[#171A18] text-[#C5F467]'
-              : 'text-[#5C615A] hover:text-[#171A18]'
+              ? 'bg-[#171A18] text-[#C5F467] dark:bg-[#C5F467] dark:text-[#171A18]'
+              : 'text-[#5C615A] hover:text-[#171A18] dark:text-[#A6AAA3] dark:hover:text-[#F4F3ED]'
           }`}
         >
           Satellite
@@ -167,7 +171,7 @@ export function TripMap({
 
       {points.length === 0 && (
         <div className="pointer-events-none absolute inset-x-4 bottom-4 z-[400] flex justify-center">
-          <span className="rounded-[8px] border border-[#E4E2D9] bg-white/95 px-3 py-1.5 text-xs font-medium text-[#5C615A] shadow-sm">
+          <span className="rounded-[8px] border border-[#E4E2D9] bg-white/95 px-3 py-1.5 text-xs font-medium text-[#5C615A] shadow-sm dark:border-[#343A35] dark:bg-[#171A18]/95 dark:text-[#B0B4AD]">
             Start a GPS ride or select a GPS trip from history to plot its route
           </span>
         </div>

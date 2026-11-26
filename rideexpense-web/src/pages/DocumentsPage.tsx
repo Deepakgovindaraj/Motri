@@ -141,8 +141,8 @@ export function DocumentsPage() {
       header: 'Document',
       render: (doc) => (
         <div>
-          <p className="font-bold text-[#171A18]">{doc.title}</p>
-          <p className="text-xs text-[#7D827A]">
+          <p className="font-bold text-[#171A18] dark:text-[#F4F3ED]">{doc.title}</p>
+          <p className="text-xs text-[#7D827A] dark:text-[#8E938B]">
             {doc.documentNumber ? `#${doc.documentNumber} · ` : ''}
             {(doc.vehicleId as VehicleRef)?.vehicleName ?? 'Personal / All Vehicles'}
           </p>
@@ -158,7 +158,7 @@ export function DocumentsPage() {
       key: 'expiry',
       header: 'Expiry Date',
       render: (doc) => (
-        <span className="text-xs text-[#5C615A]">{formatDate(doc.expiryDate)}</span>
+        <span className="text-xs text-[#5C615A] dark:text-[#B0B4AD]">{formatDate(doc.expiryDate)}</span>
       ),
     },
     {
@@ -181,13 +181,13 @@ export function DocumentsPage() {
               target="_blank"
               rel="noreferrer"
               download={doc.fileName || undefined}
-              className="inline-flex items-center gap-1 rounded-[8px] border border-[#E4E2D9] px-2.5 py-1 text-xs font-semibold text-[#171A18] hover:bg-[#F4F3ED]"
+              className="inline-flex items-center gap-1 rounded-[8px] border border-[#E4E2D9] px-2.5 py-1 text-xs font-semibold text-[#171A18] hover:bg-[#F4F3ED] dark:border-[#343A35] dark:text-[#F4F3ED] dark:hover:bg-[#232724]"
             >
               <ExternalLink className="h-3.5 w-3.5" /> View
             </a>
           )}
           <Button variant="ghost" size="sm" onClick={() => void handleDelete(doc._id)}>
-            <Trash2 className="h-4 w-4 text-[#B42318]" />
+            <Trash2 className="h-4 w-4 text-[#B42318] dark:text-[#F87171]" />
           </Button>
         </div>
       ),
@@ -198,10 +198,10 @@ export function DocumentsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18] dark:text-[#F4F3ED]">
             Document Vault
           </h1>
-          <p className="mt-1 text-sm text-[#5C615A]">
+          <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
             Insurance policies, registration certificates, pollution (PUC), and driver licences.
           </p>
         </div>
@@ -228,7 +228,7 @@ export function DocumentsPage() {
       {/* Expiry Timeline */}
       {expiryTimeline.length > 0 && (
         <Card className="p-6">
-          <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.08em] text-[#7D827A]">
+          <h2 className="mb-4 text-sm font-bold uppercase tracking-[0.08em] text-[#7D827A] dark:text-[#8E938B]">
             Expiry Timeline
           </h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -237,11 +237,11 @@ export function DocumentsPage() {
               return (
                 <div
                   key={doc._id}
-                  className="flex items-center justify-between gap-2 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-3.5"
+                  className="flex items-center justify-between gap-2 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-3.5 dark:border-[#2B302C] dark:bg-[#1E221F]"
                 >
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-bold text-[#171A18]">{doc.title}</p>
-                    <p className="text-xs text-[#5C615A]">
+                    <p className="truncate text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">{doc.title}</p>
+                    <p className="text-xs text-[#5C615A] dark:text-[#B0B4AD]">
                       {doc.documentType} · {formatDate(doc.expiryDate)}
                     </p>
                   </div>
@@ -254,14 +254,14 @@ export function DocumentsPage() {
       )}
 
       {error && (
-        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
           {error}
         </div>
       )}
 
       <Card className="overflow-hidden">
         {isLoading ? (
-          <div className="flex items-center justify-center py-16 text-sm text-[#7D827A]">
+          <div className="flex items-center justify-center py-16 text-sm text-[#7D827A] dark:text-[#8E938B]">
             <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading documents...
           </div>
         ) : (
@@ -272,8 +272,8 @@ export function DocumentsPage() {
             emptyState={
               <div className="px-6 py-16 text-center">
                 <FileText className="mx-auto h-10 w-10 text-[#A6AAA3]" />
-                <h3 className="mt-3 text-base font-bold text-[#171A18]">No documents stored yet</h3>
-                <p className="mt-1 text-sm text-[#5C615A]">
+                <h3 className="mt-3 text-base font-bold text-[#171A18] dark:text-[#F4F3ED]">No documents stored yet</h3>
+                <p className="mt-1 text-sm text-[#5C615A] dark:text-[#B0B4AD]">
                   Upload insurance, registration, PUC, or licence records to monitor expiry dates.
                 </p>
               </div>
@@ -290,7 +290,7 @@ export function DocumentsPage() {
       >
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {formError && (
-            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
               {formError}
             </div>
           )}
@@ -331,10 +331,10 @@ export function DocumentsPage() {
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
-              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.06em] text-[#5C615A]">
+              <label className="mb-1.5 block text-xs font-semibold uppercase tracking-[0.06em] text-[#5C615A] dark:text-[#A6AAA3]">
                 Upload File (PDF / Image &le; 900 KB)
               </label>
-              <label className="flex cursor-pointer items-center gap-2 rounded-[10px] border border-dashed border-[#DCDAD0] bg-[#FAF9F5] px-3.5 py-2.5 text-xs font-medium text-[#171A18] hover:border-[#171A18]">
+              <label className="flex cursor-pointer items-center gap-2 rounded-[10px] border border-dashed border-[#DCDAD0] bg-[#FAF9F5] px-3.5 py-2.5 text-xs font-medium text-[#171A18] hover:border-[#171A18] dark:border-[#343A35] dark:bg-[#1E221F] dark:text-[#F4F3ED] dark:hover:border-[#C5F467]">
                 <Upload className="h-4 w-4" />
                 <span className="truncate">{uploadedFileName || 'Choose file...'}</span>
                 <input
@@ -355,7 +355,7 @@ export function DocumentsPage() {
 
           <Input label="Notes" placeholder="Optional notes" {...register('notes')} />
 
-          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4 dark:border-[#262B27]">
             <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
               Cancel
             </Button>

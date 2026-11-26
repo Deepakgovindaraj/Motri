@@ -49,7 +49,7 @@ export function LoginPage() {
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {serverError && (
-          <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
+          <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318] dark:border-[#5C2320] dark:bg-[#2B1514] dark:text-[#FCA5A5]">
             {serverError}
           </div>
         )}
@@ -76,9 +76,9 @@ export function LoginPage() {
           Sign in
         </Button>
 
-        <p className="text-center text-sm text-[#5C615A]">
+        <p className="text-center text-sm text-[#5C615A] dark:text-[#B0B4AD]">
           New to Vehixa?{' '}
-          <Link to="/register" className="font-semibold text-[#171A18] underline decoration-[#C5F467] decoration-2 underline-offset-4">
+          <Link to="/register" className="font-semibold text-[#171A18] underline decoration-[#C5F467] decoration-2 underline-offset-4 dark:text-[#F4F3ED]">
             Create an account
           </Link>
         </p>

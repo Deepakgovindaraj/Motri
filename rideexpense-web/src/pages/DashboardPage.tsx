@@ -244,7 +244,7 @@ export function DashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={analytics?.monthlyChart ?? []}>
                   <defs>
-                    <linearGradient id="motriBlue" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="vehixaBlue" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#2563EB" stopOpacity={0.25} />
                       <stop offset="95%" stopColor="#2563EB" stopOpacity={0} />
                     </linearGradient>
@@ -258,7 +258,7 @@ export function DashboardPage() {
                     dataKey="amount"
                     stroke="#2563EB"
                     strokeWidth={2}
-                    fill="url(#motriBlue)"
+                    fill="url(#vehixaBlue)"
                   />
                 </AreaChart>
               </ResponsiveContainer>

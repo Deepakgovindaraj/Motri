@@ -21,11 +21,11 @@ export function AuthLayout({
             <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-electric-600 text-white">
               <Gauge className="h-5 w-5" />
             </span>
-            Motri
+            Vehixa
           </Link>
           <div className="mt-16 max-w-md space-y-4">
             <p className="text-xs font-semibold uppercase tracking-widest text-electric-500">
-              Mobility · Operations · Tracking · Records · Insights
+              Personal Vehicle Finance
             </p>
             <h1 className="text-3xl font-semibold leading-tight text-white">
               Clarity over every kilometre and every rupee or dollar spent.
@@ -69,7 +69,7 @@ export function AuthLayout({
             <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-electric-600 text-white">
               <Gauge className="h-4 w-4" />
             </span>
-            Motri
+            Vehixa
           </Link>
           <div className="ml-auto">
             <ThemeToggle />
@@ -87,7 +87,7 @@ export function AuthLayout({
         </div>
 
         <p className="text-center text-xs text-slate-500 dark:text-slate-500">
-          © {new Date().getFullYear()} Motri. Mobility, Operations, Tracking, Records &amp; Insights.
+          © {new Date().getFullYear()} Vehixa. Vehicle Expense &amp; Mobility Management.
         </p>
       </div>
     </div>

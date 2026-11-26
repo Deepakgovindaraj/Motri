@@ -8,7 +8,7 @@ async function bootstrap() {
 
   const app = createApp();
   const server = app.listen(env.PORT, () => {
-    console.log(`Motri API listening on http://localhost:${env.PORT}/api/v1`);
+    console.log(`Vehixa API listening on http://localhost:${env.PORT}/api/v1`);
   });
 
   const shutdown = async (signal: string) => {
@@ -24,6 +24,6 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  console.error('Failed to start Motri backend:', error);
+  console.error('Failed to start Vehixa backend:', error);
   process.exit(1);
 });

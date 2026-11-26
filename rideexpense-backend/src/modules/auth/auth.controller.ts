@@ -13,7 +13,7 @@ import {
   rotateRefreshToken,
 } from './auth.service';
 
-const REFRESH_COOKIE_NAME = 'motri_refresh_token';
+const REFRESH_COOKIE_NAME = 'vehixa_refresh_token';
 
 function setRefreshCookie(res: Response, token: string): void {
   res.cookie(REFRESH_COOKIE_NAME, token, {

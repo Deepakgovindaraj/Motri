@@ -19,7 +19,7 @@ router.get('/health', (_req, res) => {
   sendSuccess(
     res,
     {
-      service: 'motri-backend',
+      service: 'vehixa-backend',
       status: 'ok',
       database: dbStatus,
       timestamp: new Date().toISOString(),

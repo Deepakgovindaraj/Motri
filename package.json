@@ -2,7 +2,7 @@
   "name": "rideexpense-monorepo",
   "version": "1.0.0",
   "private": true,
-  "description": "Motri - Full-stack MERN vehicle mobility, operations, tracking, records & insights platform",
+  "description": "Vehixa - Full-stack MERN vehicle expense & fleet management platform",
   "workspaces": [
     "rideexpense-backend",
     "rideexpense-web"

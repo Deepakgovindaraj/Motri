@@ -1,12 +1,6 @@
-# Motri — Mobility, Operations, Tracking, Records & Insights
+# Vehixa — Vehicle Expense & Fleet Management Platform (MERN Stack)
 
-**Motri** is a full-stack MERN vehicle expense and mobility management platform.
-
-- **M – Mobility**: Vehicle and ride management.
-- **O – Operations**: Daily vehicle activities.
-- **T – Tracking**: GPS, trips and mileage.
-- **R – Records**: Fuel, maintenance and expenses.
-- **I – Insights**: Analytics, budgets and cost reports.
+**Vehixa** is a full-stack MERN vehicle expense, trip tracking, fuel, maintenance, and budgeting platform.
 
 ## Monorepo Structure
 
@@ -28,7 +22,7 @@
    ```
 
 2. **Start MongoDB**:
-   - Local `mongod` listening on `mongodb://localhost:27017/Riders`
+   - Cloud MongoDB Atlas or local `mongod`
    - Or using Docker:
      ```bash
      docker compose up -d

@@ -73,6 +73,15 @@ export function errorHandler(
   }
 
   console.error('Unhandled error:', err);
+  if (err.name === 'MongooseServerSelectionError' || err.name === 'MongoServerSelectionError') {
+    res.status(503).json({
+      success: false,
+      message: 'Database connection unavailable. Please check MONGODB_URI and Atlas network access.',
+      code: 'DATABASE_UNAVAILABLE',
+    });
+    return;
+  }
+
   res.status(500).json({
     success: false,
     message: env.NODE_ENV === 'production' ? 'Internal server error' : err.message || 'Internal server error',

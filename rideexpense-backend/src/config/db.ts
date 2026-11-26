@@ -42,7 +42,7 @@ const DEFAULT_SUBSCRIPTION_PLANS = [
   },
   {
     code: 'PRO',
-    name: 'Motri Pro',
+    name: 'Vehixa Pro',
     description: 'Unlimited vehicles, advanced analytics, budget alerts, and receipt storage.',
     monthlyPrice: mongoose.Types.Decimal128.fromString('9.99'),
     annualPrice: mongoose.Types.Decimal128.fromString('99.00'),
@@ -63,7 +63,9 @@ export async function ensureCollectionsAndDefaults(): Promise<void> {
     if (!existingNames.has(collectionName)) {
       await model.createCollection();
     }
-    await model.syncIndexes();
+    if (process.env.VERCEL !== '1') {
+      await model.syncIndexes();
+    }
   }
 
   for (const cat of DEFAULT_EXPENSE_CATEGORIES) {
@@ -95,7 +97,7 @@ export async function connectDatabase(uri: string = env.MONGODB_URI): Promise<ty
     mongoose.set('strictQuery', true);
     connectionPromise = mongoose
       .connect(uri, {
-        serverSelectionTimeoutMS: 5000,
+        serverSelectionTimeoutMS: 10000,
       })
       .then(async (conn) => {
         if (!initializedDefaults) {

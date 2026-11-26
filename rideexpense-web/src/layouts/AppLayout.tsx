@@ -76,7 +76,7 @@ export function AppLayout() {
               <Gauge className="h-4 w-4" />
             </span>
             <Link to="/dashboard" className="text-lg font-bold tracking-tight">
-              Motri
+              Vehixa
             </Link>
           </div>
           <div className="py-6">{renderNavLinks()}</div>
@@ -117,7 +117,7 @@ export function AppLayout() {
                   <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-electric-600 text-white">
                     <Gauge className="h-4 w-4" />
                   </span>
-                  <span className="text-lg font-bold">Motri</span>
+                  <span className="text-lg font-bold">Vehixa</span>
                 </div>
                 <button
                   type="button"
@@ -156,7 +156,7 @@ export function AppLayout() {
               <Menu className="h-5 w-5" />
             </button>
             <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-              Motri · Mobility, Operations, Tracking, Records &amp; Insights
+              Vehixa · Vehicle Expense &amp; Fleet Intelligence
             </span>
           </div>
 

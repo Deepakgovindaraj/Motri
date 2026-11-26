@@ -2,8 +2,8 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api/v1';
 
-const ACCESS_TOKEN_KEY = 'motri_access_token';
-const REFRESH_TOKEN_KEY = 'motri_refresh_token';
+const ACCESS_TOKEN_KEY = 'vehixa_access_token';
+const REFRESH_TOKEN_KEY = 'vehixa_refresh_token';
 
 export const tokenStorage = {
   getAccessToken: () => localStorage.getItem(ACCESS_TOKEN_KEY),

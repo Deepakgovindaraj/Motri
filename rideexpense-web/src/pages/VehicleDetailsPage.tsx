@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Loader2, Pencil, Trash2 } from 'lucide-react';
+import { VehicleVisual } from '../components/VehicleVisual';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
@@ -68,9 +69,8 @@ export function VehicleDetailsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-20 text-sm text-slate-500">
-        <Loader2 className="mr-2 h-5 w-5 animate-spin text-electric-600" />
-        Loading vehicle details...
+      <div className="flex items-center justify-center py-20 text-sm text-[#7D827A]">
+        <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading vehicle...
       </div>
     );
   }
@@ -78,15 +78,9 @@ export function VehicleDetailsPage() {
   if (error || !vehicle) {
     return (
       <Card className="mx-auto max-w-lg p-8 text-center">
-        <p className="text-sm font-medium text-red-600 dark:text-red-400">
-          {error || 'Vehicle not found'}
-        </p>
-        <Link
-          to="/vehicles"
-          className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-electric-600 hover:underline"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Return to Vehicles
+        <p className="text-sm font-medium text-[#B42318]">{error || 'Vehicle not found'}</p>
+        <Link to="/vehicles" className="mt-4 inline-flex items-center gap-1.5 text-sm font-semibold text-[#171A18] underline">
+          <ArrowLeft className="h-4 w-4" /> Return to Garage
         </Link>
       </Card>
     );
@@ -100,18 +94,17 @@ export function VehicleDetailsPage() {
         <div>
           <Link
             to="/vehicles"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#5C615A] hover:text-[#171A18]"
           >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Vehicles
+            <ArrowLeft className="h-4 w-4" /> Back to Garage
           </Link>
           <div className="mt-2 flex items-center gap-3">
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+            <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
               {vehicle.vehicleName}
             </h1>
-            <Badge variant="blue">{vehicle.vehicleType}</Badge>
+            <Badge variant="sage">{vehicle.vehicleType}</Badge>
           </div>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-1 text-sm text-[#5C615A]">
             {vehicle.brand} {vehicle.model} · {vehicle.registrationNumber}
           </p>
         </div>
@@ -119,12 +112,10 @@ export function VehicleDetailsPage() {
         {!isEditing && (
           <div className="flex items-center gap-2.5">
             <Button variant="outline" onClick={() => setIsEditing(true)}>
-              <Pencil className="h-4 w-4" />
-              Edit Vehicle
+              <Pencil className="h-4 w-4" /> Edit Vehicle
             </Button>
             <Button variant="danger" isLoading={isDeleting} onClick={handleDelete}>
-              <Trash2 className="h-4 w-4" />
-              Delete
+              <Trash2 className="h-4 w-4" /> Delete
             </Button>
           </div>
         )}
@@ -132,9 +123,7 @@ export function VehicleDetailsPage() {
 
       {isEditing ? (
         <Card className="p-6 sm:p-8">
-          <h2 className="mb-6 text-lg font-semibold text-slate-900 dark:text-white">
-            Edit Vehicle Specifications
-          </h2>
+          <h2 className="mb-6 text-lg font-bold text-[#171A18]">Edit Specifications</h2>
           <VehicleForm
             initialValues={vehicle}
             submitLabel="Update Vehicle"
@@ -145,81 +134,56 @@ export function VehicleDetailsPage() {
         </Card>
       ) : (
         <Card className="p-6 sm:p-8">
-          <h2 className="mb-6 text-base font-semibold text-slate-900 dark:text-white">
-            Vehicle Specifications
-          </h2>
+          <VehicleVisual
+            imageUrl={vehicle.vehicleImage}
+            vehicleType={vehicle.vehicleType}
+            vehicleName={vehicle.vehicleName}
+            className="mb-6 h-56 w-full"
+          />
           <dl className="grid gap-6 sm:grid-cols-3">
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Registration Number
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
-                {vehicle.registrationNumber}
-              </dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Registration</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18]">{vehicle.registrationNumber}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Brand &amp; Model
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Make &amp; Model</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18]">
                 {vehicle.brand} {vehicle.model}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Manufacturing Year
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
-                {vehicle.manufacturingYear}
-              </dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Year</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">{vehicle.manufacturingYear}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Fuel / Energy Type
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
-                {vehicle.fuelType}
-              </dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Fuel Type</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18]">{vehicle.fuelType}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Current Odometer
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Current Odometer</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">
                 {formatNumber(vehicle.currentOdometer, 0)} {distanceUnit}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Expected Mileage
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Expected Mileage</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">
                 {vehicle.expectedMileage ? `${vehicle.expectedMileage} ${distanceUnit}/unit` : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Tank / Battery Capacity
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Tank / Battery</dt>
+              <dd className="mt-1 text-sm font-bold tabular-nums text-[#171A18]">
                 {vehicle.tankCapacity ? `${vehicle.tankCapacity} units` : '—'}
               </dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Purchase Date
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
-                {formatDate(vehicle.purchaseDate)}
-              </dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Purchase Date</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18]">{formatDate(vehicle.purchaseDate)}</dd>
             </div>
             <div>
-              <dt className="text-xs font-medium uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Added On
-              </dt>
-              <dd className="mt-1 text-sm font-semibold text-slate-900 dark:text-white">
-                {formatDate(vehicle.createdAt)}
-              </dd>
+              <dt className="text-xs font-semibold uppercase tracking-wider text-[#7D827A]">Registered On</dt>
+              <dd className="mt-1 text-sm font-bold text-[#171A18]">{formatDate(vehicle.createdAt)}</dd>
             </div>
           </dl>
         </Card>

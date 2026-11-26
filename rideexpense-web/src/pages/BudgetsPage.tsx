@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AlertTriangle, Loader2, PiggyBank, Plus, Trash2 } from 'lucide-react';
-import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
+import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
+import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { budgetService } from '../services/budgetService';
 import { expenseService } from '../services/expenseService';
@@ -32,10 +33,7 @@ function getDefaultDates(period: 'monthly' | 'weekly' | 'annual' | 'custom') {
     return { startDate: start.toISOString().slice(0, 10), endDate: end.toISOString().slice(0, 10) };
   }
   if (period === 'annual') {
-    return {
-      startDate: `${now.getFullYear()}-01-01`,
-      endDate: `${now.getFullYear()}-12-31`,
-    };
+    return { startDate: `${now.getFullYear()}-01-01`, endDate: `${now.getFullYear()}-12-31` };
   }
   const start = new Date(now.getFullYear(), now.getMonth(), 1);
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
@@ -47,7 +45,7 @@ export function BudgetsPage() {
   const [budgets, setBudgets] = useState<BudgetProgress[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -118,7 +116,7 @@ export function BudgetsPage() {
         categoryId: '',
         ...getDefaultDates('monthly'),
       });
-      setShowForm(false);
+      setShowModal(false);
       await loadData();
     } catch (err) {
       setFormError(getApiErrorMessage(err, 'Failed to create budget'));
@@ -141,98 +139,34 @@ export function BudgetsPage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Budgets &amp; Threshold Alerts
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+            Transportation Budgets
           </h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            Configure monthly, fuel, vehicle, or category budgets with alerts at 75%, 90%, and 100%.
+          <p className="mt-1 text-sm text-[#5C615A]">
+            Set monthly, fuel, vehicle, or category spending limits with alerts at 75%, 90%, and 100%.
           </p>
         </div>
-        <Button onClick={() => setShowForm((v) => !v)}>
-          <Plus className="h-4 w-4" />
-          {showForm ? 'Close Form' : 'New Budget'}
+        <Button onClick={() => setShowModal(true)}>
+          <Plus className="h-4 w-4" /> New Budget
         </Button>
       </div>
 
-      {showForm && (
-        <Card className="p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-white">
-            Create Budget
-          </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {formError && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
-                {formError}
-              </div>
-            )}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Select
-                label="Period"
-                options={[
-                  { label: 'Monthly', value: 'monthly' },
-                  { label: 'Weekly', value: 'weekly' },
-                  { label: 'Annual', value: 'annual' },
-                  { label: 'Custom Range', value: 'custom' },
-                ]}
-                {...register('period')}
-              />
-              <Input
-                label={`Total Budget (${currency})`}
-                type="number"
-                step="0.01"
-                placeholder="e.g. 500"
-                {...register('amount', { required: true, min: 1 })}
-              />
-              <Select
-                label="Vehicle Scope (optional)"
-                options={[
-                  { label: 'All Vehicles', value: '' },
-                  ...vehicles.map((v) => ({ label: v.vehicleName, value: v._id })),
-                ]}
-                {...register('vehicleId')}
-              />
-              <Select
-                label="Category Scope (optional)"
-                options={[
-                  { label: 'All Categories', value: '' },
-                  ...categories.map((c) => ({ label: c.name, value: c._id })),
-                ]}
-                {...register('categoryId')}
-              />
-              <Input label="Start Date" type="date" {...register('startDate', { required: true })} />
-              <Input label="End Date" type="date" {...register('endDate', { required: true })} />
-            </div>
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" isLoading={isSubmitting}>
-                Save Budget
-              </Button>
-            </div>
-          </form>
-        </Card>
-      )}
-
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
           {error}
         </div>
       )}
 
       {isLoading ? (
-        <Card className="flex items-center justify-center py-16 text-sm text-slate-500">
-          <Loader2 className="mr-2 h-5 w-5 animate-spin text-electric-600" />
-          Evaluating budgets...
+        <Card className="flex items-center justify-center py-16 text-sm text-[#7D827A]">
+          <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Evaluating budgets...
         </Card>
       ) : budgets.length === 0 ? (
         <Card className="px-6 py-16 text-center">
-          <PiggyBank className="mx-auto h-10 w-10 text-slate-400" />
-          <h3 className="mt-3 text-base font-semibold text-slate-900 dark:text-white">
-            No budgets created yet
-          </h3>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            Set a monthly, fuel, or vehicle spending limit to track utilization.
+          <PiggyBank className="mx-auto h-10 w-10 text-[#A6AAA3]" />
+          <h3 className="mt-3 text-base font-bold text-[#171A18]">No budgets configured</h3>
+          <p className="mt-1 text-sm text-[#5C615A]">
+            Create a monthly, fuel, or vehicle budget to receive automated threshold alerts.
           </p>
         </Card>
       ) : (
@@ -240,79 +174,66 @@ export function BudgetsPage() {
           {budgets.map((b) => {
             const barColor =
               b.alertLevel === 'exceeded_100'
-                ? 'bg-red-600'
-                : b.alertLevel === 'critical_90'
-                  ? 'bg-orange-500'
-                  : b.alertLevel === 'warning_75'
-                    ? 'bg-amber-500'
-                    : 'bg-electric-600';
-
-            const badgeVariant =
-              b.alertLevel === 'exceeded_100'
-                ? 'red'
+                ? 'bg-[#B42318]'
                 : b.alertLevel === 'critical_90' || b.alertLevel === 'warning_75'
-                  ? 'amber'
-                  : 'green';
+                  ? 'bg-[#171A18]'
+                  : 'bg-[#C5F467]';
 
             return (
               <Card key={b._id} className="p-6">
-                <div className="flex items-start justify-between gap-2">
+                <div className="flex items-start justify-between gap-3">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-semibold text-slate-900 dark:text-white">
+                      <h3 className="text-base font-bold text-[#171A18]">
                         {b.vehicle?.vehicleName || 'All Vehicles'} ·{' '}
                         {b.category?.name || 'All Categories'}
                       </h3>
-                      <Badge variant={badgeVariant}>
-                        {b.triggeredThreshold ? `${b.triggeredThreshold}% Alert` : 'On Track'}
-                      </Badge>
+                      <StatusIndicator
+                        tone={
+                          b.alertLevel === 'exceeded_100'
+                            ? 'danger'
+                            : b.alertLevel === 'critical_90' || b.alertLevel === 'warning_75'
+                              ? 'warning'
+                              : 'positive'
+                        }
+                        label={b.triggeredThreshold ? `${b.triggeredThreshold}% Alert` : 'On Track'}
+                      />
                     </div>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-1 text-xs text-[#7D827A]">
                       {b.period.toUpperCase()} · {formatDate(b.startDate)} – {formatDate(b.endDate)}
                     </p>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(b._id)}
-                    className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
-                  >
-                    <Trash2 className="h-4 w-4" />
+                  <Button variant="ghost" size="sm" onClick={() => void handleDelete(b._id)}>
+                    <Trash2 className="h-4 w-4 text-[#B42318]" />
                   </Button>
                 </div>
 
                 <div className="mt-5 space-y-2">
-                  <div className="flex justify-between text-xs font-medium">
-                    <span className="text-slate-600 dark:text-slate-300">
+                  <div className="flex justify-between text-xs font-semibold">
+                    <span className="tabular-nums text-[#5C615A]">
                       Spent: {formatCurrency(b.amountSpent, currency)}
                     </span>
-                    <span className="text-slate-900 dark:text-white">
+                    <span className="tabular-nums text-[#171A18]">
                       {b.spendingPercentage}% of {formatCurrency(b.totalBudget, currency)}
                     </span>
                   </div>
-                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-navy-800">
+                  <div className="h-2.5 w-full overflow-hidden rounded-full bg-[#F4F3ED]">
                     <div
                       className={`h-full rounded-full transition-all ${barColor}`}
                       style={{ width: `${Math.min(100, b.spendingPercentage)}%` }}
                     />
                   </div>
                   <div className="flex items-center justify-between text-xs">
-                    <span className="text-slate-500 dark:text-slate-400">
+                    <span className="tabular-nums text-[#5C615A]">
                       Remaining:{' '}
-                      <strong
-                        className={
-                          b.remainingBudget < 0
-                            ? 'text-red-600 dark:text-red-400'
-                            : 'text-slate-900 dark:text-white'
-                        }
-                      >
+                      <strong className={b.remainingBudget < 0 ? 'text-[#B42318]' : 'text-[#171A18]'}>
                         {formatCurrency(b.remainingBudget, currency)}
                       </strong>
                     </span>
                     {b.triggeredThreshold && (
-                      <span className="inline-flex items-center gap-1 font-medium text-amber-700 dark:text-amber-400">
+                      <span className="inline-flex items-center gap-1 font-semibold text-[#171A18]">
                         <AlertTriangle className="h-3.5 w-3.5" />
-                        Threshold {b.triggeredThreshold}% crossed
+                        {b.triggeredThreshold}% threshold reached
                       </span>
                     )}
                   </div>
@@ -322,6 +243,66 @@ export function BudgetsPage() {
           })}
         </div>
       )}
+
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title="Create Transportation Budget"
+        subtitle="Alerts automatically trigger when spending reaches 75%, 90%, and 100%."
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {formError && (
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+              {formError}
+            </div>
+          )}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Select
+              label="Period"
+              options={[
+                { label: 'Monthly', value: 'monthly' },
+                { label: 'Weekly', value: 'weekly' },
+                { label: 'Annual', value: 'annual' },
+                { label: 'Custom Range', value: 'custom' },
+              ]}
+              {...register('period')}
+            />
+            <Input
+              label={`Total Budget (${currency})`}
+              type="number"
+              step="0.01"
+              placeholder="e.g. 500"
+              {...register('amount', { required: true, min: 1 })}
+            />
+            <Select
+              label="Vehicle Scope"
+              options={[
+                { label: 'All Vehicles', value: '' },
+                ...vehicles.map((v) => ({ label: v.vehicleName, value: v._id })),
+              ]}
+              {...register('vehicleId')}
+            />
+            <Select
+              label="Category Scope"
+              options={[
+                { label: 'All Categories', value: '' },
+                ...categories.map((c) => ({ label: c.name, value: c._id })),
+              ]}
+              {...register('categoryId')}
+            />
+            <Input label="Start Date" type="date" {...register('startDate', { required: true })} />
+            <Input label="End Date" type="date" {...register('endDate', { required: true })} />
+          </div>
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+            <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Save Budget
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

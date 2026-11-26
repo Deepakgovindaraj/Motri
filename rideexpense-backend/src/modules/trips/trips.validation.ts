@@ -82,6 +82,8 @@ export const addTripLocationsSchema = z.object({
 export const completeTripSchema = z.object({
   endLocation: z.string().trim().max(200).optional(),
   endTime: z.coerce.date().optional(),
+  endOdometer: z.coerce.number().min(0).optional(),
+  distanceKm: z.coerce.number().min(0).optional(),
   notes: z.string().trim().max(1000).optional(),
 });
 

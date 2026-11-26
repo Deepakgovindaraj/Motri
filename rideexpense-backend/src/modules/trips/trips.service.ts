@@ -1,6 +1,7 @@
 import { FilterQuery } from 'mongoose';
 import {
   AuditLog,
+  FuelLog,
   OdometerReading,
   Trip,
   TripLocation,
@@ -8,7 +9,7 @@ import {
   Vehicle,
 } from '../../models';
 import { ITrip } from '../../models/Trip';
-import { calculateTripDistance } from '../../utils/calculations';
+import { calculateMileage, calculateTripDistance, decimalToNumber } from '../../utils/calculations';
 import { AppError } from '../../utils/errors';
 import {
   AddTripLocationsInput,
@@ -326,7 +327,7 @@ export async function completeTrip(
   userId: string,
   tripId: string,
   input: CompleteTripInput,
-) {
+): Promise<Record<string, unknown>> {
   const trip = await Trip.findOne({ _id: tripId, userId });
   if (!trip) {
     throw new AppError('Trip not found', 404, 'TRIP_NOT_FOUND');
@@ -337,21 +338,32 @@ export async function completeTrip(
 
   const endTime = input.endTime ?? new Date();
   const durationMinutes = Math.max(
-    0,
+    1,
     Math.round((endTime.getTime() - trip.startTime.getTime()) / 60000),
   );
+
+  const vehicle = await Vehicle.findOne({ _id: trip.vehicleId, userId });
+  const startOdo = trip.startOdometer ?? vehicle?.currentOdometer ?? 0;
+
+  let finalDistance = Number(trip.distance.toFixed(2));
+  if (input.endOdometer !== undefined && input.endOdometer >= startOdo) {
+    finalDistance = Number((input.endOdometer - startOdo).toFixed(2));
+  } else if (input.distanceKm !== undefined && input.distanceKm > finalDistance) {
+    finalDistance = Number(input.distanceKm.toFixed(2));
+  }
 
   trip.status = 'completed';
   trip.endTime = endTime;
   trip.duration = durationMinutes;
-  trip.distance = Number(trip.distance.toFixed(2));
+  trip.distance = finalDistance;
   if (input.endLocation !== undefined) trip.endLocation = input.endLocation;
   if (input.notes !== undefined) trip.notes = input.notes;
 
-  const vehicle = await Vehicle.findOne({ _id: trip.vehicleId, userId });
   if (vehicle) {
-    const startOdo = trip.startOdometer ?? vehicle.currentOdometer;
-    const computedEndOdo = Number((startOdo + trip.distance).toFixed(2));
+    const computedEndOdo =
+      input.endOdometer !== undefined && input.endOdometer >= startOdo
+        ? input.endOdometer
+        : Number((startOdo + finalDistance).toFixed(2));
     trip.startOdometer = startOdo;
     trip.endOdometer = computedEndOdo;
 
@@ -371,6 +383,48 @@ export async function completeTrip(
 
   await trip.save();
 
+  // Compute ride mileage & estimated fuel cost from vehicle's recent fuel logs / expectedMileage
+  const fuelLogs = await FuelLog.find({ userId, vehicleId: trip.vehicleId })
+    .sort({ odometer: 1, createdAt: 1 });
+
+  let computedMileage = 0;
+  let lastFullOdo: number | null = null;
+  let accFuel = 0;
+  let totalDist = 0;
+  let totalFuel = 0;
+
+  for (const log of fuelLogs) {
+    if (lastFullOdo === null) {
+      if (log.isFullTank) {
+        lastFullOdo = log.odometer;
+        accFuel = 0;
+      }
+      continue;
+    }
+    accFuel += log.quantity;
+    if (log.isFullTank && log.odometer > lastFullOdo && accFuel > 0) {
+      totalDist += log.odometer - lastFullOdo;
+      totalFuel += accFuel;
+      lastFullOdo = log.odometer;
+      accFuel = 0;
+    }
+  }
+
+  if (totalFuel > 0) {
+    computedMileage = calculateMileage(totalDist, totalFuel);
+  } else if (vehicle?.expectedMileage && vehicle.expectedMileage > 0) {
+    computedMileage = vehicle.expectedMileage;
+  }
+
+  const latestFuelLog = fuelLogs[fuelLogs.length - 1];
+  const latestFuelPrice = latestFuelLog ? decimalToNumber(latestFuelLog.unitPrice) : 0;
+  const estimatedFuelUsed =
+    computedMileage > 0 ? Number((finalDistance / computedMileage).toFixed(3)) : 0;
+  const estimatedFuelCost =
+    estimatedFuelUsed > 0 && latestFuelPrice > 0
+      ? Number((estimatedFuelUsed * latestFuelPrice).toFixed(2))
+      : 0;
+
   await AuditLog.create({
     userId,
     action: 'TRIP_COMPLETED',
@@ -379,5 +433,20 @@ export async function completeTrip(
     metadata: { distance: trip.distance, duration: trip.duration },
   });
 
-  return trip.populate('vehicleId', 'vehicleName registrationNumber vehicleType');
+  const populated = await trip.populate(
+    'vehicleId',
+    'vehicleName registrationNumber vehicleType',
+  );
+
+  return {
+    ...populated.toJSON(),
+    rideSummary: {
+      distanceKm: trip.distance,
+      durationMinutes: trip.duration,
+      mileageKmPerUnit: computedMileage,
+      estimatedFuelUsed,
+      estimatedFuelCost,
+      latestFuelPrice,
+    },
+  };
 }

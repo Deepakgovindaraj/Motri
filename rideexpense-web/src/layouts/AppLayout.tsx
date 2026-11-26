@@ -1,181 +1,376 @@
-import { useState } from 'react';
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import {
   BarChart3,
+  Bell,
   Car,
+  CheckCheck,
+  ChevronDown,
+  FileText,
   Fuel,
   Gauge,
-  LayoutDashboard,
+  LayoutGrid,
   LogOut,
-  Menu,
-  Navigation,
+  MoreHorizontal,
   PiggyBank,
-  PlusCircle,
   Receipt,
   Route as RouteIcon,
-  User as UserIcon,
+  Settings,
   Wrench,
   X,
 } from 'lucide-react';
-import { ThemeToggle } from '../components/ThemeToggle';
 import { useAuth } from '../context/AuthContext';
+import { notificationService } from '../services/notificationService';
+import { AppNotification } from '../types';
+import { formatDate } from '../utils/formatters';
 
-const navItems = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+const primaryNav = [
+  { to: '/dashboard', label: 'Overview', icon: LayoutGrid },
   { to: '/vehicles', label: 'Vehicles', icon: Car },
   { to: '/trips', label: 'Trips', icon: RouteIcon },
-  { to: '/gps-tracking', label: 'GPS Tracking', icon: Navigation },
   { to: '/expenses', label: 'Expenses', icon: Receipt },
+  { to: '/insights', label: 'Insights', icon: BarChart3 },
+  { to: '/documents', label: 'Documents', icon: FileText },
+];
+
+const secondaryNav = [
   { to: '/fuel', label: 'Fuel & EV', icon: Fuel },
   { to: '/maintenance', label: 'Maintenance', icon: Wrench },
-  { to: '/analytics', label: 'Analytics', icon: BarChart3 },
   { to: '/budgets', label: 'Budgets', icon: PiggyBank },
-  { to: '/profile', label: 'Profile & Settings', icon: UserIcon },
+  { to: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export function AppLayout() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [moreOpen, setMoreOpen] = useState(false);
+
+  const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
+
+  const loadNotifications = async () => {
+    try {
+      const res = await notificationService.list();
+      setNotifications(res.items);
+      setUnreadCount(res.unreadCount);
+    } catch {
+      // Ignore silent notification polling error
+    }
+  };
+
+  useEffect(() => {
+    void loadNotifications();
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node)) {
+        setNotifOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const handleMarkRead = async (id: string) => {
+    await notificationService.markRead(id);
+    setNotifications((prev) => prev.map((n) => (n._id === id ? { ...n, isRead: true } : n)));
+    setUnreadCount((c) => Math.max(0, c - 1));
+  };
+
+  const handleMarkAllRead = async () => {
+    await notificationService.markAllRead();
+    setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
+    setUnreadCount(0);
+  };
 
   const handleLogout = async () => {
     await logout();
     navigate('/login');
   };
 
-  const renderNavLinks = (onNavigate?: () => void) => (
-    <nav className="space-y-1 px-3">
-      {navItems.map(({ to, label, icon: Icon }) => (
-        <NavLink
-          key={to}
-          to={to}
-          end={to === '/vehicles'}
-          onClick={onNavigate}
-          className={({ isActive }) =>
-            `flex items-center gap-3 rounded-lg px-3.5 py-2.5 text-sm font-medium transition-colors ${
-              isActive
-                ? 'bg-electric-600 text-white shadow-sm'
-                : 'text-slate-300 hover:bg-navy-800 hover:text-white'
-            }`
-          }
-        >
-          <Icon className="h-4 w-4 shrink-0" />
-          {label}
-        </NavLink>
-      ))}
-    </nav>
-  );
+  const isRouteActive = (path: string) => {
+    if (path === '/expenses') {
+      return (
+        location.pathname.startsWith('/expenses') ||
+        location.pathname.startsWith('/fuel') ||
+        location.pathname.startsWith('/maintenance')
+      );
+    }
+    if (path === '/insights') {
+      return (
+        location.pathname.startsWith('/insights') ||
+        location.pathname.startsWith('/analytics') ||
+        location.pathname.startsWith('/budgets')
+      );
+    }
+    if (path === '/trips') {
+      return (
+        location.pathname.startsWith('/trips') ||
+        location.pathname.startsWith('/gps-tracking')
+      );
+    }
+    return location.pathname.startsWith(path);
+  };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 dark:bg-navy-950">
-      {/* Desktop Sidebar */}
-      <aside className="hidden w-64 shrink-0 flex-col justify-between bg-navy-900 text-white lg:flex">
-        <div>
-          <div className="flex h-16 items-center gap-2.5 border-b border-navy-800 px-6">
-            <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-electric-600 text-white">
-              <Gauge className="h-4 w-4" />
+    <div className="min-h-screen bg-[#F4F3ED] text-[#171A18] pb-20 lg:pb-0">
+      {/* Sticky Horizontal Top Navigation */}
+      <header className="sticky top-0 z-30 border-b border-[#E4E2D9] bg-[#F4F3ED]/95 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-[1360px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-10">
+          {/* Left: Brand Logo */}
+          <Link to="/dashboard" className="flex shrink-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#171A18] text-[#C5F467]">
+              <Gauge className="h-5 w-5" />
             </span>
-            <Link to="/dashboard" className="text-lg font-bold tracking-tight">
-              Vehixa
-            </Link>
-          </div>
-          <div className="py-6">{renderNavLinks()}</div>
-        </div>
+            <span className="text-lg font-extrabold tracking-tight text-[#171A18]">Vehixa</span>
+          </Link>
 
-        <div className="border-t border-navy-800 p-4">
-          <div className="mb-3 flex items-center gap-3 px-2">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-navy-700 text-sm font-semibold text-white">
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-medium text-white">{user?.name}</p>
-              <p className="truncate text-xs text-slate-400">{user?.email}</p>
-            </div>
-          </div>
-          <button
-            type="button"
-            onClick={handleLogout}
-            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 transition-colors hover:bg-navy-800 hover:text-white"
+          {/* Center: Horizontal Navigation */}
+          <nav
+            aria-label="Primary navigation"
+            className="hidden items-center gap-1 rounded-[12px] border border-[#E4E2D9] bg-white p-1 lg:flex"
           >
-            <LogOut className="h-4 w-4" />
-            Sign out
-          </button>
-        </div>
-      </aside>
-
-      {/* Mobile Drawer */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 flex lg:hidden">
-          <div
-            className="fixed inset-0 bg-slate-900/60"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="relative z-10 flex w-64 flex-col justify-between bg-navy-900 text-white">
-            <div>
-              <div className="flex h-16 items-center justify-between border-b border-navy-800 px-6">
-                <div className="flex items-center gap-2.5">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-electric-600 text-white">
-                    <Gauge className="h-4 w-4" />
-                  </span>
-                  <span className="text-lg font-bold">Vehixa</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setMobileOpen(false)}
-                  className="text-slate-400 hover:text-white"
+            {primaryNav.map((item) => {
+              const active = isRouteActive(item.to);
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`rounded-[9px] px-3.5 py-1.5 text-sm font-semibold transition-colors ${
+                    active
+                      ? 'bg-[#171A18] text-[#C5F467]'
+                      : 'text-[#5C615A] hover:bg-[#F4F3ED] hover:text-[#171A18]'
+                  }`}
                 >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="py-6">{renderNavLinks(() => setMobileOpen(false))}</div>
-            </div>
-            <div className="border-t border-navy-800 p-4">
+                  {item.label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          {/* Right: Notifications, Settings, Profile */}
+          <div className="flex items-center gap-2">
+            {/* Notifications Dropdown */}
+            <div ref={notifRef} className="relative">
               <button
                 type="button"
-                onClick={handleLogout}
-                className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium text-slate-300 hover:bg-navy-800 hover:text-white"
+                onClick={() => {
+                  setNotifOpen((o) => !o);
+                  setProfileOpen(false);
+                }}
+                aria-label="Notifications"
+                className="relative flex h-9 w-9 items-center justify-center rounded-[10px] border border-[#E4E2D9] bg-white text-[#171A18] transition-colors hover:bg-[#FAF9F5]"
               >
-                <LogOut className="h-4 w-4" />
-                Sign out
+                <Bell className="h-4 w-4" />
+                {unreadCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-[#C5F467] px-1 text-[10px] font-bold text-[#171A18]">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
+                )}
+              </button>
+
+              {notifOpen && (
+                <div className="absolute right-0 mt-2 w-80 overflow-hidden rounded-[12px] border border-[#E4E2D9] bg-white shadow-lg sm:w-96">
+                  <div className="flex items-center justify-between border-b border-[#ECEAE2] px-4 py-3">
+                    <span className="text-xs font-bold uppercase tracking-wider text-[#171A18]">
+                      Notifications ({unreadCount} unread)
+                    </span>
+                    {unreadCount > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleMarkAllRead}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-[#171A18] hover:underline"
+                      >
+                        <CheckCheck className="h-3.5 w-3.5" />
+                        Mark all read
+                      </button>
+                    )}
+                  </div>
+                  <div className="max-h-80 divide-y divide-[#ECEAE2] overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <p className="px-4 py-8 text-center text-xs text-[#7D827A]">
+                        No alerts yet. Budget thresholds and reminders appear here.
+                      </p>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n._id}
+                          onClick={() => !n.isRead && void handleMarkRead(n._id)}
+                          className={`cursor-pointer px-4 py-3 transition-colors hover:bg-[#FAF9F5] ${
+                            n.isRead ? 'opacity-65' : 'bg-[#FAF9F5]'
+                          }`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-xs font-semibold text-[#171A18]">{n.title}</p>
+                            {!n.isRead && (
+                              <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#C5F467] ring-1 ring-[#171A18]" />
+                            )}
+                          </div>
+                          <p className="mt-0.5 text-xs text-[#5C615A]">{n.body}</p>
+                          <p className="mt-1 text-[10px] text-[#A6AAA3]">{formatDate(n.createdAt)}</p>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Settings link */}
+            <Link
+              to="/settings"
+              aria-label="Settings"
+              className={`hidden h-9 w-9 items-center justify-center rounded-[10px] border transition-colors sm:flex ${
+                location.pathname.startsWith('/settings') || location.pathname.startsWith('/profile')
+                  ? 'border-[#171A18] bg-[#171A18] text-[#C5F467]'
+                  : 'border-[#E4E2D9] bg-white text-[#171A18] hover:bg-[#FAF9F5]'
+              }`}
+            >
+              <Settings className="h-4 w-4" />
+            </Link>
+
+            {/* Profile Dropdown */}
+            <div ref={profileRef} className="relative">
+              <button
+                type="button"
+                onClick={() => {
+                  setProfileOpen((o) => !o);
+                  setNotifOpen(false);
+                }}
+                className="flex items-center gap-2 rounded-[10px] border border-[#E4E2D9] bg-white py-1 pl-1.5 pr-2.5 text-left transition-colors hover:bg-[#FAF9F5]"
+              >
+                <span className="flex h-7 w-7 items-center justify-center rounded-[8px] bg-[#171A18] text-xs font-bold text-[#C5F467]">
+                  {user?.name?.charAt(0).toUpperCase() || 'V'}
+                </span>
+                <span className="hidden max-w-[110px] truncate text-xs font-semibold text-[#171A18] md:block">
+                  {user?.name}
+                </span>
+                <ChevronDown className="h-3.5 w-3.5 text-[#7D827A]" />
+              </button>
+
+              {profileOpen && (
+                <div className="absolute right-0 mt-2 w-60 overflow-hidden rounded-[12px] border border-[#E4E2D9] bg-white py-1.5 shadow-lg">
+                  <div className="border-b border-[#ECEAE2] px-4 py-2.5">
+                    <p className="truncate text-sm font-semibold text-[#171A18]">{user?.name}</p>
+                    <p className="truncate text-xs text-[#7D827A]">{user?.email}</p>
+                  </div>
+                  <div className="py-1">
+                    {secondaryNav.map(({ to, label, icon: Icon }) => (
+                      <Link
+                        key={to}
+                        to={to}
+                        onClick={() => setProfileOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2 text-sm text-[#171A18] hover:bg-[#F4F3ED]"
+                      >
+                        <Icon className="h-4 w-4 text-[#5C615A]" />
+                        {label}
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="border-t border-[#ECEAE2] pt-1">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-sm font-medium text-[#B42318] hover:bg-[#FEF3F2]"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Page Container */}
+      <main className="mx-auto max-w-[1360px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
+        <Outlet />
+      </main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav
+        aria-label="Mobile navigation"
+        className="fixed bottom-0 left-0 right-0 z-30 border-t border-[#E4E2D9] bg-white/95 backdrop-blur-md lg:hidden"
+      >
+        <div className="grid grid-cols-5 px-2 py-1.5">
+          {primaryNav.slice(0, 4).map(({ to, label, icon: Icon }) => {
+            const active = isRouteActive(to);
+            return (
+              <NavLink
+                key={to}
+                to={to}
+                className="flex flex-col items-center justify-center gap-1 rounded-[10px] py-1.5 text-[11px] font-semibold"
+              >
+                <span
+                  className={`flex h-7 w-10 items-center justify-center rounded-full transition-colors ${
+                    active ? 'bg-[#C5F467] text-[#171A18]' : 'text-[#5C615A]'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                </span>
+                <span className={active ? 'text-[#171A18]' : 'text-[#7D827A]'}>{label}</span>
+              </NavLink>
+            );
+          })}
+          <button
+            type="button"
+            onClick={() => setMoreOpen(true)}
+            className="flex flex-col items-center justify-center gap-1 rounded-[10px] py-1.5 text-[11px] font-semibold text-[#5C615A]"
+          >
+            <span className="flex h-7 w-10 items-center justify-center rounded-full">
+              <MoreHorizontal className="h-4 w-4" />
+            </span>
+            <span className="text-[#7D827A]">More</span>
+          </button>
+        </div>
+      </nav>
+
+      {/* Mobile Secondary Menu Sheet */}
+      {moreOpen && (
+        <div className="fixed inset-0 z-50 flex items-end bg-[#171A18]/50 lg:hidden">
+          <div className="w-full rounded-t-[18px] border-t border-[#E4E2D9] bg-white p-5 pb-8">
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-sm font-bold text-[#171A18]">More Sections</span>
+              <button
+                type="button"
+                onClick={() => setMoreOpen(false)}
+                className="rounded-lg p-1.5 text-[#5C615A] hover:bg-[#F4F3ED]"
+              >
+                <X className="h-5 w-5" />
               </button>
             </div>
-          </aside>
+            <div className="grid grid-cols-2 gap-2.5">
+              {[
+                { to: '/insights', label: 'Insights', icon: BarChart3 },
+                { to: '/documents', label: 'Documents', icon: FileText },
+                ...secondaryNav,
+              ].map(({ to, label, icon: Icon }) => (
+                <Link
+                  key={to}
+                  to={to}
+                  onClick={() => setMoreOpen(false)}
+                  className="flex items-center gap-2.5 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] px-3.5 py-3 text-sm font-semibold text-[#171A18]"
+                >
+                  <Icon className="h-4 w-4 text-[#171A18]" />
+                  {label}
+                </Link>
+              ))}
+            </div>
+          </div>
         </div>
       )}
-
-      {/* Main Content */}
-      <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white/95 px-4 backdrop-blur dark:border-slate-800 dark:bg-navy-900/95 sm:px-8">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setMobileOpen(true)}
-              aria-label="Open navigation menu"
-              className="rounded-lg p-2 text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-navy-800 lg:hidden"
-            >
-              <Menu className="h-5 w-5" />
-            </button>
-            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
-              Vehixa · Vehicle Expense &amp; Fleet Intelligence
-            </span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Link
-              to="/vehicles/new"
-              className="hidden items-center gap-1.5 rounded-lg bg-electric-600 px-3.5 py-2 text-xs font-semibold text-white transition-colors hover:bg-electric-700 sm:inline-flex"
-            >
-              <PlusCircle className="h-4 w-4" />
-              Add Vehicle
-            </Link>
-          </div>
-        </header>
-
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-8 sm:px-8">
-          <Outlet />
-        </main>
-      </div>
     </div>
   );
 }

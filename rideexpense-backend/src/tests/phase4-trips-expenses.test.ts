@@ -153,6 +153,28 @@ describe('RideExpense Phase 4 API (Trips, Expenses, Fuel, Maintenance)', () => {
     expect(completeRes.status).toBe(200);
     expect(completeRes.body.data.status).toBe('completed');
     expect(completeRes.body.data.endLocation).toBe('Shivajinagar');
+    expect(completeRes.body.data.rideSummary).toBeDefined();
+    expect(completeRes.body.data.rideSummary.distanceKm).toBeGreaterThan(1);
+  });
+
+  it('auto-calculates fuel litres from totalAmount and petrol unitPrice', async () => {
+    const { token, vehicleId } = await setupUserAndVehicle('petrolamount@example.com');
+
+    const res = await request(app)
+      .post('/api/v1/fuel')
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        vehicleId,
+        fuelType: 'Petrol',
+        totalAmount: 500,
+        unitPrice: 100,
+        odometer: 1050,
+        isFullTank: false,
+      });
+
+    expect(res.status).toBe(201);
+    expect(res.body.data.expense.amount).toBe(500);
+    expect(res.body.data.fuelLog.quantity).toBe(5);
   });
 
   it('records unified expenses, fuel logs with full-tank mileage, and maintenance reminders', async () => {

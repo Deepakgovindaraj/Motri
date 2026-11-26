@@ -48,18 +48,24 @@ export const updateExpenseSchema = z.object({
   attachmentUrl: z.string().url().or(z.literal('')).optional(),
 });
 
-export const createFuelExpenseSchema = z.object({
-  vehicleId: objectIdSchema,
-  fuelType: z.enum(['Petrol', 'Diesel', 'CNG', 'EV charging']),
-  quantity: z.coerce.number().positive('Quantity must be greater than 0'),
-  unitPrice: z.coerce.number().positive('Unit price must be greater than 0'),
-  odometer: z.coerce.number().min(0, 'Odometer cannot be negative'),
-  isFullTank: z.boolean().default(true),
-  expenseDate: z.coerce.date().optional(),
-  paymentMethod: paymentMethodEnum.default('Card'),
-  description: z.string().trim().max(500).optional(),
-  attachmentUrl: z.string().url().or(z.literal('')).optional(),
-});
+export const createFuelExpenseSchema = z
+  .object({
+    vehicleId: objectIdSchema,
+    fuelType: z.enum(['Petrol', 'Diesel', 'CNG', 'EV charging']).default('Petrol'),
+    quantity: z.coerce.number().positive('Quantity must be greater than 0').optional(),
+    totalAmount: z.coerce.number().positive('Amount must be greater than 0').optional(),
+    unitPrice: z.coerce.number().positive('Unit price must be greater than 0'),
+    odometer: z.coerce.number().min(0, 'Odometer cannot be negative'),
+    isFullTank: z.boolean().default(true),
+    expenseDate: z.coerce.date().optional(),
+    paymentMethod: paymentMethodEnum.default('Card'),
+    description: z.string().trim().max(500).optional(),
+    attachmentUrl: z.string().url().or(z.literal('')).optional(),
+  })
+  .refine((data) => Boolean(data.quantity || data.totalAmount), {
+    message: 'Provide either petrol amount or quantity in litres',
+    path: ['totalAmount'],
+  });
 
 export const createMaintenanceExpenseSchema = z.object({
   vehicleId: objectIdSchema,

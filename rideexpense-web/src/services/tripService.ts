@@ -74,7 +74,7 @@ export const tripService = {
 
   async completeGps(
     tripId: string,
-    payload: { endLocation?: string; notes?: string },
+    payload: { endLocation?: string; endOdometer?: number; distanceKm?: number; notes?: string },
   ): Promise<Trip> {
     const res = await apiClient.post<ApiResponse<Trip>>(`/trips/${tripId}/complete`, payload);
     return res.data.data;

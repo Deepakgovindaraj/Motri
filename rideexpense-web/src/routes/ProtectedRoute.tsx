@@ -8,9 +8,9 @@ export function ProtectedRoute() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-navy-950">
-        <div className="flex items-center gap-3 text-sm font-medium text-slate-600 dark:text-slate-300">
-          <Loader2 className="h-5 w-5 animate-spin text-electric-600" />
+      <div className="flex min-h-screen items-center justify-center bg-[#F4F3ED]">
+        <div className="flex items-center gap-3 text-sm font-semibold text-[#171A18]">
+          <Loader2 className="h-5 w-5 animate-spin text-[#171A18]" />
           Loading your workspace...
         </div>
       </div>

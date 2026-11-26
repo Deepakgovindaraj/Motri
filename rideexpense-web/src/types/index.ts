@@ -74,6 +74,15 @@ export interface VehicleRef {
   currentOdometer?: number;
 }
 
+export interface RideSummary {
+  distanceKm: number;
+  durationMinutes: number;
+  mileageKmPerUnit: number;
+  estimatedFuelUsed: number;
+  estimatedFuelCost: number;
+  latestFuelPrice: number;
+}
+
 export interface Trip {
   _id: string;
   userId: string;
@@ -91,6 +100,7 @@ export interface Trip {
   endTime?: string;
   status: 'in_progress' | 'completed' | 'cancelled';
   createdAt: string;
+  rideSummary?: RideSummary;
 }
 
 export interface TripLocationPoint {
@@ -293,6 +303,39 @@ export interface BudgetProgress {
   triggeredThreshold: number | null;
 }
 
+export interface AppNotification {
+  _id: string;
+  userId: string;
+  type: 'budget_alert' | 'maintenance_reminder' | 'insurance_renewal' | 'service_reminder' | 'expense' | 'system';
+  title: string;
+  body: string;
+  isRead: boolean;
+  createdAt: string;
+}
+
+export type DocumentCategory =
+  | 'Insurance'
+  | 'Registration'
+  | 'Pollution Certificate'
+  | 'Licence'
+  | 'Warranty'
+  | 'Other';
+
+export interface VehicleDocumentItem {
+  _id: string;
+  userId: string;
+  vehicleId?: VehicleRef | string;
+  documentType: DocumentCategory;
+  title: string;
+  documentNumber?: string;
+  issueDate?: string;
+  expiryDate?: string;
+  fileUrl?: string;
+  fileName?: string;
+  notes?: string;
+  createdAt: string;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   message: string;
@@ -300,6 +343,7 @@ export interface ApiResponse<T> {
   meta?: {
     pagination?: PaginationMeta;
     totalAmount?: number;
+    unreadCount?: number;
     summary?: {
       totalFuelCost: number;
       totalQuantity: number;

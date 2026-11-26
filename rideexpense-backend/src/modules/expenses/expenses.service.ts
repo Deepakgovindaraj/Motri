@@ -245,7 +245,16 @@ export async function createFuelExpense(userId: string, input: CreateFuelExpense
     throw new AppError('Fuel expense category not initialized', 500, 'CATEGORY_MISSING');
   }
 
-  const totalCost = calculateFuelCost(input.quantity, input.unitPrice);
+  const totalCost =
+    input.totalAmount !== undefined
+      ? Number(input.totalAmount.toFixed(2))
+      : calculateFuelCost(input.quantity!, input.unitPrice);
+
+  const quantity =
+    input.quantity !== undefined
+      ? Number(input.quantity.toFixed(3))
+      : Number((totalCost / input.unitPrice).toFixed(3));
+
   const currency = await getUserCurrency(userId);
   const expenseDate = input.expenseDate ?? new Date();
 
@@ -258,7 +267,7 @@ export async function createFuelExpense(userId: string, input: CreateFuelExpense
     paymentMethod: input.paymentMethod,
     description:
       input.description ||
-      `${input.fuelType} (${input.quantity} @ ${input.unitPrice})`,
+      `${input.fuelType} (${quantity} L @ ${input.unitPrice})`,
     expenseDate,
     attachmentUrl: input.attachmentUrl || undefined,
   });
@@ -270,7 +279,7 @@ export async function createFuelExpense(userId: string, input: CreateFuelExpense
       vehicleId: vehicle._id,
       expenseId: expense._id,
       fuelType: input.fuelType,
-      quantity: input.quantity,
+      quantity,
       unitPrice: toDecimal128(input.unitPrice),
       odometer: input.odometer,
       isFullTank: input.isFullTank,

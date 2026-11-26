@@ -35,7 +35,8 @@ export const fuelService = {
   async create(payload: {
     vehicleId: string;
     fuelType: 'Petrol' | 'Diesel' | 'CNG' | 'EV charging';
-    quantity: number;
+    quantity?: number;
+    totalAmount?: number;
     unitPrice: number;
     odometer: number;
     isFullTank: boolean;

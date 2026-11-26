@@ -1,11 +1,13 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { RideProvider } from './context/RideContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppLayout } from './layouts/AppLayout';
 import { AddVehiclePage } from './pages/AddVehiclePage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
 import { BudgetsPage } from './pages/BudgetsPage';
 import { DashboardPage } from './pages/DashboardPage';
+import { DocumentsPage } from './pages/DocumentsPage';
 import { ExpensesPage } from './pages/ExpensesPage';
 import { FuelPage } from './pages/FuelPage';
 import { GpsTrackingPage } from './pages/GpsTrackingPage';
@@ -24,7 +26,8 @@ export default function App() {
   return (
     <ThemeProvider>
       <AuthProvider>
-        <BrowserRouter>
+        <RideProvider>
+          <BrowserRouter>
           <Routes>
             <Route path="/" element={<LandingPage />} />
 
@@ -44,8 +47,11 @@ export default function App() {
                 <Route path="/expenses" element={<ExpensesPage />} />
                 <Route path="/fuel" element={<FuelPage />} />
                 <Route path="/maintenance" element={<MaintenancePage />} />
+                <Route path="/insights" element={<AnalyticsPage />} />
                 <Route path="/analytics" element={<AnalyticsPage />} />
                 <Route path="/budgets" element={<BudgetsPage />} />
+                <Route path="/documents" element={<DocumentsPage />} />
+                <Route path="/settings" element={<ProfilePage />} />
                 <Route path="/profile" element={<ProfilePage />} />
               </Route>
             </Route>
@@ -53,6 +59,7 @@ export default function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+        </RideProvider>
       </AuthProvider>
     </ThemeProvider>
   );

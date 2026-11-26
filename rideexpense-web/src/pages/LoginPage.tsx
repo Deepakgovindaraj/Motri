@@ -45,11 +45,11 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Welcome back"
-      subtitle="Sign in to manage your vehicles, trips, and transportation expenses."
+      subtitle="Sign in to access your vehicles, financial ledger, and trip telemetry."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         {serverError && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+          <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
             {serverError}
           </div>
         )}
@@ -76,10 +76,10 @@ export function LoginPage() {
           Sign in
         </Button>
 
-        <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-          Don&apos;t have an account?{' '}
-          <Link to="/register" className="font-semibold text-electric-600 hover:underline">
-            Create one
+        <p className="text-center text-sm text-[#5C615A]">
+          New to Vehixa?{' '}
+          <Link to="/register" className="font-semibold text-[#171A18] underline decoration-[#C5F467] decoration-2 underline-offset-4">
+            Create an account
           </Link>
         </p>
       </form>

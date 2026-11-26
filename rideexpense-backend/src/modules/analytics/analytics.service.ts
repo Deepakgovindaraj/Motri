@@ -106,8 +106,17 @@ async function computeMileageData(userObjectId: mongoose.Types.ObjectId, vehicle
   return { averageMileage, series, byVehicleAverage };
 }
 
-export async function getDashboardAnalytics(userId: string) {
+export async function getDashboardAnalytics(userId: string, vehicleId?: string) {
   const userObjectId = new mongoose.Types.ObjectId(userId);
+  const vehicleObjectId = vehicleId ? new mongoose.Types.ObjectId(vehicleId) : undefined;
+  const expenseMatch = {
+    userId: userObjectId,
+    ...(vehicleObjectId ? { vehicleId: vehicleObjectId } : {}),
+  };
+  const tripMatch = {
+    userId: userObjectId,
+    ...(vehicleObjectId ? { vehicleId: vehicleObjectId } : {}),
+  };
   const now = new Date();
 
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -136,7 +145,7 @@ export async function getDashboardAnalytics(userId: string) {
       annual: unknown;
       allTime: unknown;
     }>([
-      { $match: { userId: userObjectId } },
+      { $match: expenseMatch },
       {
         $group: {
           _id: null,
@@ -157,15 +166,15 @@ export async function getDashboardAnalytics(userId: string) {
       },
     ]),
     Expense.aggregate<{ _id: mongoose.Types.ObjectId; total: unknown; count: number }>([
-      { $match: { userId: userObjectId } },
+      { $match: expenseMatch },
       { $group: { _id: '$categoryId', total: { $sum: '$amount' }, count: { $sum: 1 } } },
     ]),
     Expense.aggregate<{ _id: mongoose.Types.ObjectId; total: unknown; count: number }>([
-      { $match: { userId: userObjectId } },
+      { $match: expenseMatch },
       { $group: { _id: '$vehicleId', total: { $sum: '$amount' }, count: { $sum: 1 } } },
     ]),
     Expense.aggregate<{ _id: { year: number; month: number }; total: unknown }>([
-      { $match: { userId: userObjectId, expenseDate: { $gte: sixMonthsAgo } } },
+      { $match: { ...expenseMatch, expenseDate: { $gte: sixMonthsAgo } } },
       {
         $group: {
           _id: { year: { $year: '$expenseDate' }, month: { $month: '$expenseDate' } },
@@ -175,13 +184,13 @@ export async function getDashboardAnalytics(userId: string) {
       { $sort: { '_id.year': 1, '_id.month': 1 } },
     ]),
     Trip.aggregate<{ _id: null; totalDistance: number }>([
-      { $match: { userId: userObjectId } },
+      { $match: tripMatch },
       { $group: { _id: null, totalDistance: { $sum: '$distance' } } },
     ]),
     Vehicle.countDocuments({ userId: userObjectId }),
     ExpenseCategory.find({}),
     Vehicle.find({ userId: userObjectId }).select('vehicleName registrationNumber vehicleType'),
-    computeMileageData(userObjectId),
+    computeMileageData(userObjectId, vehicleId),
   ]);
 
   const catMap = new Map(categories.map((c) => [c._id.toString(), c]));

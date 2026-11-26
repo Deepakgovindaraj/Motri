@@ -14,8 +14,8 @@ export function AddVehiclePage() {
   const handleSubmit = async (payload: VehiclePayload) => {
     setServerError(null);
     try {
-      const created = await vehicleService.create(payload);
-      navigate(`/vehicles/${created._id}`, { replace: true });
+      await vehicleService.create(payload);
+      navigate('/vehicles', { replace: true });
     } catch (error) {
       setServerError(getApiErrorMessage(error, 'Could not register vehicle.'));
     }
@@ -26,16 +26,16 @@ export function AddVehiclePage() {
       <div>
         <Link
           to="/vehicles"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#5C615A] hover:text-[#171A18]"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back to Vehicles
+          Back to Garage
         </Link>
-        <h1 className="mt-3 text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-          Register New Vehicle
+        <h1 className="mt-3 text-2xl font-extrabold tracking-tight text-[#171A18]">
+          Register Vehicle
         </h1>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-          Add specifications and initial odometer reading for your vehicle.
+        <p className="mt-1 text-sm text-[#5C615A]">
+          Add technical specifications, fuel profile, and initial odometer reading.
         </p>
       </div>
 

@@ -5,7 +5,9 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Input } from '../components/ui/Input';
+import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
+import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { maintenanceService } from '../services/maintenanceService';
 import { vehicleService } from '../services/vehicleService';
@@ -36,7 +38,7 @@ export function MaintenancePage() {
   const [records, setRecords] = useState<MaintenanceRecord[]>([]);
   const [reminders, setReminders] = useState<MaintenanceReminder[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
-  const [showForm, setShowForm] = useState(false);
+  const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | null>(null);
@@ -78,7 +80,7 @@ export function MaintenancePage() {
         setValue('vehicleId', vehRes.items[0]._id);
       }
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to load maintenance data'));
+      setError(getApiErrorMessage(err, 'Failed to load maintenance timeline'));
     } finally {
       setIsLoading(false);
     }
@@ -112,10 +114,10 @@ export function MaintenancePage() {
         paymentMethod: 'Card',
         serviceDate: new Date().toISOString().slice(0, 10),
       });
-      setShowForm(false);
+      setShowModal(false);
       await loadData();
     } catch (err) {
-      setFormError(getApiErrorMessage(err, 'Failed to record maintenance'));
+      setFormError(getApiErrorMessage(err, 'Failed to save maintenance record'));
     }
   };
 
@@ -136,195 +138,110 @@ export function MaintenancePage() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Maintenance &amp; Service
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#171A18]">
+            Maintenance Timeline
           </h1>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
-            Track servicing, oil changes, tyres, insurance renewals, and upcoming reminders.
+          <p className="mt-1 text-sm text-[#5C615A]">
+            Track servicing, oil changes, tyres, insurance, and upcoming service schedules.
           </p>
         </div>
-        <Button onClick={() => setShowForm((v) => !v)}>
-          <Plus className="h-4 w-4" />
-          {showForm ? 'Close Form' : 'Log Maintenance'}
+        <Button onClick={() => setShowModal(true)}>
+          <Plus className="h-4 w-4" /> Log Maintenance
         </Button>
       </div>
 
-      {/* Reminders */}
-      {reminders.length > 0 && (
-        <Card className="p-5">
-          <div className="mb-3 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-white">
-            <BellRing className="h-4 w-4 text-electric-600" />
-            Service &amp; Renewal Reminders
-          </div>
+      {/* Upcoming & Overdue Reminders */}
+      <Card className="p-6">
+        <div className="mb-4 flex items-center gap-2">
+          <BellRing className="h-4 w-4 text-[#171A18]" />
+          <h2 className="text-base font-bold text-[#171A18]">Upcoming &amp; Scheduled Service</h2>
+        </div>
+        {reminders.length === 0 ? (
+          <p className="text-xs text-[#7D827A]">
+            No service reminders scheduled. Set a next service date or odometer target when logging maintenance.
+          </p>
+        ) : (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {reminders.map((rem) => (
               <div
                 key={rem._id}
-                className="rounded-lg border border-slate-200 p-3.5 text-xs dark:border-slate-800"
+                className="flex items-start justify-between gap-2 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-4"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-slate-900 dark:text-white">
+                <div>
+                  <p className="text-sm font-bold text-[#171A18]">
                     {rem.vehicle.vehicleName} · {rem.serviceType}
-                  </span>
-                  <Badge
-                    variant={
-                      rem.status === 'overdue'
-                        ? 'red'
-                        : rem.status === 'due_soon'
-                          ? 'amber'
-                          : 'neutral'
-                    }
-                  >
-                    {rem.status.replace('_', ' ')}
-                  </Badge>
+                  </p>
+                  <p className="mt-1 text-xs text-[#5C615A]">
+                    {rem.nextServiceDate ? `Due ${formatDate(rem.nextServiceDate)}` : ''}
+                    {rem.nextServiceDate && rem.nextServiceOdometer ? ' · ' : ''}
+                    {rem.nextServiceOdometer
+                      ? `${formatNumber(rem.nextServiceOdometer, 0)} ${distanceUnit}`
+                      : ''}
+                  </p>
                 </div>
-                <p className="mt-1.5 text-slate-500 dark:text-slate-400">
-                  {rem.nextServiceDate ? `Due ${formatDate(rem.nextServiceDate)}` : ''}
-                  {rem.nextServiceDate && rem.nextServiceOdometer ? ' · ' : ''}
-                  {rem.nextServiceOdometer
-                    ? `Target ${formatNumber(rem.nextServiceOdometer, 0)} ${distanceUnit}`
-                    : ''}
-                </p>
+                <StatusIndicator
+                  tone={rem.status === 'overdue' ? 'danger' : rem.status === 'due_soon' ? 'warning' : 'positive'}
+                  label={rem.status.replace('_', ' ')}
+                />
               </div>
             ))}
           </div>
-        </Card>
-      )}
-
-      {showForm && (
-        <Card className="p-6">
-          <h2 className="mb-4 text-base font-semibold text-slate-900 dark:text-white">
-            Record Maintenance / Service
-          </h2>
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {formError && (
-              <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
-                {formError}
-              </div>
-            )}
-            <div className="grid gap-4 sm:grid-cols-3">
-              <Select
-                label="Vehicle"
-                options={vehicles.map((v) => ({
-                  label: `${v.vehicleName} (${v.registrationNumber})`,
-                  value: v._id,
-                }))}
-                {...register('vehicleId', { required: true })}
-              />
-              <Select
-                label="Service Type"
-                options={[
-                  { label: 'Servicing', value: 'Servicing' },
-                  { label: 'Engine oil', value: 'Engine oil' },
-                  { label: 'Tyre replacement', value: 'Tyre replacement' },
-                  { label: 'Battery replacement', value: 'Battery replacement' },
-                  { label: 'Repairs', value: 'Repairs' },
-                  { label: 'Insurance', value: 'Insurance' },
-                  { label: 'Other', value: 'Other' },
-                ]}
-                {...register('serviceType')}
-              />
-              <Input
-                label={`Amount (${currency})`}
-                type="number"
-                step="0.01"
-                {...register('amount', { required: true, min: 0.01 })}
-              />
-              <Input label="Service Date" type="date" {...register('serviceDate')} />
-              <Input
-                label={`Odometer (${distanceUnit})`}
-                type="number"
-                step="0.1"
-                {...register('odometer', { required: true, min: 0 })}
-              />
-              <Select
-                label="Payment Method"
-                options={[
-                  { label: 'Card', value: 'Card' },
-                  { label: 'UPI', value: 'UPI' },
-                  { label: 'Cash', value: 'Cash' },
-                  { label: 'Bank Transfer', value: 'Bank Transfer' },
-                ]}
-                {...register('paymentMethod')}
-              />
-              <Input label="Next Service Date (optional)" type="date" {...register('nextServiceDate')} />
-              <Input
-                label={`Next Service Odo (${distanceUnit})`}
-                type="number"
-                step="1"
-                placeholder="e.g. 15000"
-                {...register('nextServiceOdometer')}
-              />
-            </div>
-            <Input label="Notes" placeholder="Parts replaced or workshop notes" {...register('notes')} />
-            <div className="flex justify-end gap-3">
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
-                Cancel
-              </Button>
-              <Button type="submit" isLoading={isSubmitting}>
-                Save Record
-              </Button>
-            </div>
-          </form>
-        </Card>
-      )}
+        )}
+      </Card>
 
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+        <div className="rounded-[12px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
           {error}
         </div>
       )}
 
-      <Card className="overflow-hidden">
+      {/* Vertical Past Service Timeline */}
+      <Card className="p-6">
+        <h2 className="mb-6 text-base font-bold text-[#171A18]">Past Service Records</h2>
         {isLoading ? (
-          <div className="flex items-center justify-center py-14 text-sm text-slate-500">
-            <Loader2 className="mr-2 h-5 w-5 animate-spin text-electric-600" />
-            Loading maintenance history...
+          <div className="flex items-center justify-center py-12 text-sm text-[#7D827A]">
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Loading service timeline...
           </div>
         ) : records.length === 0 ? (
-          <div className="px-6 py-14 text-center">
-            <Wrench className="mx-auto h-10 w-10 text-slate-400" />
-            <h3 className="mt-3 text-base font-semibold text-slate-900 dark:text-white">
-              No maintenance records yet
-            </h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              Keep track of servicing, oil changes, and insurance renewals.
+          <div className="py-12 text-center">
+            <Wrench className="mx-auto h-10 w-10 text-[#A6AAA3]" />
+            <h3 className="mt-3 text-base font-bold text-[#171A18]">No service records yet</h3>
+            <p className="mt-1 text-sm text-[#5C615A]">
+              Log your vehicle&apos;s servicing, repairs, or oil changes to build its history.
             </p>
           </div>
         ) : (
-          <div className="divide-y divide-slate-200 dark:divide-slate-800">
+          <div className="relative space-y-6 border-l-2 border-[#E4E2D9] pl-6">
             {records.map((rec) => {
               const vehicle = rec.vehicleId as VehicleRef;
               return (
-                <div
-                  key={rec._id}
-                  className="flex flex-col justify-between gap-3 px-6 py-4 sm:flex-row sm:items-center"
-                >
-                  <div className="space-y-1">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-sm font-semibold text-slate-900 dark:text-white">
-                        {vehicle?.vehicleName ?? 'Vehicle'}
-                      </span>
-                      <Badge variant="blue">{rec.serviceType}</Badge>
+                <div key={rec._id} className="relative">
+                  <span className="absolute -left-[31px] top-1.5 h-3 w-3 rounded-full border-2 border-[#171A18] bg-[#C5F467]" />
+                  <div className="flex flex-col justify-between gap-3 rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-4 sm:flex-row sm:items-center">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-sm font-bold text-[#171A18]">
+                          {vehicle?.vehicleName ?? 'Vehicle'}
+                        </span>
+                        <Badge variant="sage">{rec.serviceType}</Badge>
+                      </div>
+                      <p className="mt-1 text-xs text-[#5C615A]">
+                        {formatDate(rec.serviceDate)} · Odometer: {formatNumber(rec.odometer, 0)}{' '}
+                        {distanceUnit}
+                        {rec.notes ? ` · ${rec.notes}` : ''}
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      {formatDate(rec.serviceDate)} · Odo: {formatNumber(rec.odometer, 0)}{' '}
-                      {distanceUnit}
-                      {rec.notes ? ` · ${rec.notes}` : ''}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">
-                      {formatCurrency(rec.expenseId?.amount ?? 0, rec.expenseId?.currency || currency)}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(rec._id)}
-                      className="text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-extrabold tabular-nums text-[#171A18]">
+                        {formatCurrency(
+                          rec.expenseId?.amount ?? 0,
+                          rec.expenseId?.currency || currency,
+                        )}
+                      </span>
+                      <Button variant="ghost" size="sm" onClick={() => void handleDelete(rec._id)}>
+                        <Trash2 className="h-4 w-4 text-[#B42318]" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
               );
@@ -332,6 +249,84 @@ export function MaintenancePage() {
           </div>
         )}
       </Card>
+
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title="Log Maintenance / Service"
+        subtitle="Records a maintenance log and linked expense transaction."
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {formError && (
+            <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-2.5 text-sm text-[#B42318]">
+              {formError}
+            </div>
+          )}
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Select
+              label="Vehicle"
+              options={vehicles.map((v) => ({
+                label: `${v.vehicleName} (${v.registrationNumber})`,
+                value: v._id,
+              }))}
+              {...register('vehicleId', { required: true })}
+            />
+            <Select
+              label="Service Category"
+              options={[
+                { label: 'Servicing', value: 'Servicing' },
+                { label: 'Engine oil', value: 'Engine oil' },
+                { label: 'Tyre replacement', value: 'Tyre replacement' },
+                { label: 'Battery replacement', value: 'Battery replacement' },
+                { label: 'Repairs', value: 'Repairs' },
+                { label: 'Insurance', value: 'Insurance' },
+                { label: 'Other', value: 'Other' },
+              ]}
+              {...register('serviceType')}
+            />
+            <Input
+              label={`Service Cost (${currency})`}
+              type="number"
+              step="0.01"
+              {...register('amount', { required: true, min: 0.01 })}
+            />
+            <Input
+              label={`Odometer (${distanceUnit})`}
+              type="number"
+              step="0.1"
+              {...register('odometer', { required: true, min: 0 })}
+            />
+            <Input label="Service Date" type="date" {...register('serviceDate')} />
+            <Select
+              label="Payment Method"
+              options={[
+                { label: 'Card', value: 'Card' },
+                { label: 'UPI', value: 'UPI' },
+                { label: 'Cash', value: 'Cash' },
+                { label: 'Bank Transfer', value: 'Bank Transfer' },
+              ]}
+              {...register('paymentMethod')}
+            />
+            <Input label="Next Service Date (optional)" type="date" {...register('nextServiceDate')} />
+            <Input
+              label={`Next Service Odo (${distanceUnit})`}
+              type="number"
+              step="1"
+              placeholder="e.g. 15000"
+              {...register('nextServiceOdometer')}
+            />
+          </div>
+          <Input label="Notes" placeholder="Workshop or parts details" {...register('notes')} />
+          <div className="flex justify-end gap-3 border-t border-[#ECEAE2] pt-4">
+            <Button type="button" variant="outline" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button type="submit" isLoading={isSubmitting}>
+              Save Record
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   );
 }

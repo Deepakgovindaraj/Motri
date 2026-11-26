@@ -16,3 +16,4 @@ export { Notification } from './Notification';
 export { Subscription } from './Subscription';
 export { SubscriptionPlan } from './SubscriptionPlan';
 export { AuditLog } from './AuditLog';
+export { VehicleDocument } from './VehicleDocument';

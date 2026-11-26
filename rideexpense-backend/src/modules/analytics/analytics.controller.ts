@@ -25,7 +25,8 @@ export async function dashboard(
   next: NextFunction,
 ): Promise<void> {
   try {
-    const data = await getDashboardAnalytics(req.user!.id);
+    const vehicleId = req.query.vehicleId ? String(req.query.vehicleId) : undefined;
+    const data = await getDashboardAnalytics(req.user!.id, vehicleId);
     sendSuccess(res, data, 'Dashboard analytics retrieved');
   } catch (error) {
     next(error);

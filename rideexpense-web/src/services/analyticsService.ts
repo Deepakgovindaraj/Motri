@@ -9,8 +9,10 @@ import {
 import { apiClient } from './apiClient';
 
 export const analyticsService = {
-  async getDashboard(): Promise<DashboardAnalytics> {
-    const res = await apiClient.get<ApiResponse<DashboardAnalytics>>('/analytics/dashboard');
+  async getDashboard(vehicleId?: string): Promise<DashboardAnalytics> {
+    const res = await apiClient.get<ApiResponse<DashboardAnalytics>>('/analytics/dashboard', {
+      params: vehicleId ? { vehicleId } : undefined,
+    });
     return res.data.data;
   },
 

@@ -7,8 +7,8 @@ export function PublicOnlyRoute() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-slate-50 dark:bg-navy-950">
-        <Loader2 className="h-5 w-5 animate-spin text-electric-600" />
+      <div className="flex min-h-screen items-center justify-center bg-[#F4F3ED]">
+        <Loader2 className="h-5 w-5 animate-spin text-[#171A18]" />
       </div>
     );
   }

@@ -32,9 +32,9 @@ const vehicleFormSchema = z.object({
 type VehicleFormValues = z.infer<typeof vehicleFormSchema>;
 
 const VEHICLE_TYPE_OPTIONS: { label: string; value: VehicleType }[] = [
-  { label: 'Car', value: 'Car' },
   { label: 'Bike (Motorcycle)', value: 'Bike' },
   { label: 'Scooter', value: 'Scooter' },
+  { label: 'Car', value: 'Car' },
   { label: 'Electric vehicle', value: 'Electric vehicle' },
   { label: 'Other', value: 'Other' },
 ];
@@ -71,7 +71,7 @@ export function VehicleForm({
     resolver: zodResolver(vehicleFormSchema),
     defaultValues: {
       vehicleName: initialValues?.vehicleName ?? '',
-      vehicleType: initialValues?.vehicleType ?? 'Car',
+      vehicleType: initialValues?.vehicleType ?? 'Bike',
       registrationNumber: initialValues?.registrationNumber ?? '',
       brand: initialValues?.brand ?? '',
       model: initialValues?.model ?? '',
@@ -112,7 +112,7 @@ export function VehicleForm({
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
       {serverError && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+        <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
           {serverError}
         </div>
       )}
@@ -199,7 +199,7 @@ export function VehicleForm({
         />
       </div>
 
-      <div className="flex items-center justify-end gap-3 border-t border-slate-200 pt-5 dark:border-slate-800">
+      <div className="flex items-center justify-end gap-3 border-t border-[#ECEAE2] pt-5">
         {onCancel && (
           <Button type="button" variant="outline" onClick={onCancel}>
             Cancel

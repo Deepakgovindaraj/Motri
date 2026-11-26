@@ -52,12 +52,12 @@ export function RegisterPage() {
 
   return (
     <AuthLayout
-      title="Create your account"
-      subtitle="Start tracking vehicle expenses, mileage, and maintenance in minutes."
+      title="Create your workspace"
+      subtitle="Set up your personal vehicle finance and tracking workspace."
     >
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {serverError && (
-          <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/40 dark:text-red-300">
+          <div className="rounded-[10px] border border-[#FECDCA] bg-[#FEF3F2] px-4 py-3 text-sm text-[#B42318]">
             {serverError}
           </div>
         )}
@@ -84,7 +84,7 @@ export function RegisterPage() {
           label="Password"
           type="password"
           autoComplete="new-password"
-          placeholder="At least 8 characters with letters & numbers"
+          placeholder="8+ chars with letters & numbers"
           error={errors.password?.message}
           {...register('password')}
         />
@@ -102,9 +102,9 @@ export function RegisterPage() {
           Create account
         </Button>
 
-        <p className="text-center text-sm text-slate-600 dark:text-slate-400">
-          Already have an account?{' '}
-          <Link to="/login" className="font-semibold text-electric-600 hover:underline">
+        <p className="text-center text-sm text-[#5C615A]">
+          Already registered?{' '}
+          <Link to="/login" className="font-semibold text-[#171A18] underline decoration-[#C5F467] decoration-2 underline-offset-4">
             Sign in
           </Link>
         </p>

@@ -14,7 +14,7 @@ const router = Router();
 
 router.use(authenticate);
 
-router.get('/dashboard', dashboard);
+router.get('/dashboard', validate({ query: analyticsQuerySchema }), dashboard);
 router.get('/monthly', validate({ query: analyticsQuerySchema }), monthly);
 router.get('/mileage', validate({ query: analyticsQuerySchema }), mileage);
 router.get('/cost-per-km', validate({ query: analyticsQuerySchema }), costPerKm);

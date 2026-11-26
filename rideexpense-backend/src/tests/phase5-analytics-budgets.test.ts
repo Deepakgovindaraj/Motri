@@ -174,6 +174,16 @@ describe('RideExpense Phase 5 API (Analytics & Budgets)', () => {
       .set('Authorization', `Bearer ${token}`);
     expect(compRes.status).toBe(200);
     expect(compRes.body.data).toHaveLength(2);
+
+    // Filtered dashboard by specific vehicle (Scooter: 50 km, 500 maintenance, 0 fuel)
+    const scooterDash = await request(app)
+      .get(`/api/v1/analytics/dashboard?vehicleId=${scooterId}`)
+      .set('Authorization', `Bearer ${token}`);
+    expect(scooterDash.status).toBe(200);
+    expect(scooterDash.body.data.summary.totalDistance).toBe(50);
+    expect(scooterDash.body.data.summary.totalExpenses).toBe(500);
+    expect(scooterDash.body.data.summary.maintenanceExpenditure).toBe(500);
+    expect(scooterDash.body.data.summary.fuelExpenditure).toBe(0);
   });
 
   it('creates budgets, calculates progress, and triggers 75%, 90%, and 100% alert notifications', async () => {

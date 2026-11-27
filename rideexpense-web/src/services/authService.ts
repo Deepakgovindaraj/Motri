@@ -1,5 +1,5 @@
 import { ApiResponse, User, UserPreference } from '../types';
-import { apiClient, tokenStorage } from './apiClient';
+import { apiClient, refreshAccessToken, tokenStorage } from './apiClient';
 
 export interface AuthResponseData {
   user: User;
@@ -13,6 +13,7 @@ export const authService = {
     const res = await apiClient.post<ApiResponse<AuthResponseData>>('/auth/register', payload);
     const data = res.data.data;
     tokenStorage.setTokens(data.accessToken, data.refreshToken);
+    tokenStorage.setCachedProfile(data.user, data.preferences);
     return data;
   },
 
@@ -20,11 +21,17 @@ export const authService = {
     const res = await apiClient.post<ApiResponse<AuthResponseData>>('/auth/login', payload);
     const data = res.data.data;
     tokenStorage.setTokens(data.accessToken, data.refreshToken);
+    tokenStorage.setCachedProfile(data.user, data.preferences);
     return data;
+  },
+
+  async refreshSession(): Promise<string> {
+    return refreshAccessToken();
   },
 
   async getMe(): Promise<{ user: User; preferences: UserPreference }> {
     const res = await apiClient.get<ApiResponse<{ user: User; preferences: UserPreference }>>('/auth/me');
+    tokenStorage.setCachedProfile(res.data.data.user, res.data.data.preferences);
     return res.data.data;
   },
 
@@ -36,6 +43,7 @@ export const authService = {
       '/users/me',
       payload,
     );
+    tokenStorage.setCachedProfile(res.data.data.user, res.data.data.preferences);
     return res.data.data;
   },
 

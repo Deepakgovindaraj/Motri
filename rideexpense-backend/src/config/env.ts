@@ -16,8 +16,8 @@ const envSchema = z.object({
     .string()
     .min(16, 'JWT_REFRESH_SECRET must be at least 16 characters')
     .default('rideexpense-dev-refresh-secret-key-at-least-32-characters'),
-  JWT_ACCESS_EXPIRES_IN: z.string().default('15m'),
-  JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+  JWT_ACCESS_EXPIRES_IN: z.string().default('30d'),
+  JWT_REFRESH_EXPIRES_IN: z.string().default('365d'),
   BCRYPT_SALT_ROUNDS: z.coerce.number().int().min(4).max(15).default(10),
   GOOGLE_CLIENT_ID: z.string().optional().default(''),
   R2_ACCOUNT_ID: z.string().optional().default(''),

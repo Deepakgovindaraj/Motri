@@ -10,8 +10,10 @@ import {
   Monitor,
   Moon,
   Palette,
+  RefreshCw,
   Shield,
   Sliders,
+  Smartphone,
   Sun,
   User,
 } from 'lucide-react';
@@ -21,6 +23,7 @@ import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
+import { usePwa } from '../context/PwaContext';
 import { ThemePreference, useTheme } from '../context/ThemeContext';
 import { authService } from '../services/authService';
 import { documentService } from '../services/documentService';
@@ -43,6 +46,14 @@ type SettingsTab = 'account' | 'preferences' | 'notifications' | 'security' | 'a
 export function ProfilePage() {
   const { user, preferences, refreshProfile, logout } = useAuth();
   const { theme, resolvedTheme, isDark, setTheme } = useTheme();
+  const {
+    canInstall,
+    isInstalled,
+    isIosInstallable,
+    updateReady,
+    installApp,
+    applyUpdate,
+  } = usePwa();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<SettingsTab>('account');
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -426,6 +437,64 @@ export function ProfilePage() {
                     }`}
                   />
                 </button>
+              </div>
+
+              {/* Installable Mobile / Desktop App (PWA) */}
+              <div className="space-y-3 border-t border-[#ECEAE2] pt-5 dark:border-[#262B27]">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h3 className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">
+                      Mobile &amp; Desktop App (PWA)
+                    </h3>
+                    <p className="text-xs text-[#5C615A] dark:text-[#B0B4AD]">
+                      Run Vehixa full-screen from your home screen with offline shell caching.
+                    </p>
+                  </div>
+                  <StatusIndicator
+                    tone={isInstalled ? 'positive' : 'neutral'}
+                    label={isInstalled ? 'Installed App' : 'Browser Mode'}
+                  />
+                </div>
+
+                <div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[#E4E2D9] bg-[#FAF9F5] p-4 dark:border-[#2B302C] dark:bg-[#1E221F]">
+                  <div className="flex items-center gap-3">
+                    <span className="flex h-9 w-9 items-center justify-center rounded-[10px] bg-[#171A18] text-[#C5F467]">
+                      <Smartphone className="h-4 w-4" />
+                    </span>
+                    <div className="text-xs">
+                      {isInstalled ? (
+                        <p className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">
+                          Vehixa is installed and running in standalone app mode.
+                        </p>
+                      ) : isIosInstallable ? (
+                        <p className="text-[#5C615A] dark:text-[#B0B4AD]">
+                          On iPhone/iPad Safari, tap <strong>Share</strong> then{' '}
+                          <strong>Add to Home Screen</strong> to install Vehixa.
+                        </p>
+                      ) : canInstall ? (
+                        <p className="font-semibold text-[#171A18] dark:text-[#F4F3ED]">
+                          Ready to install on this device.
+                        </p>
+                      ) : (
+                        <p className="text-[#5C615A] dark:text-[#B0B4AD]">
+                          Use Chrome/Edge menu → <strong>Add to Home screen / Install app</strong> if not prompted automatically.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {updateReady && (
+                      <Button size="sm" variant="outline" onClick={applyUpdate}>
+                        <RefreshCw className="h-3.5 w-3.5" /> Update App
+                      </Button>
+                    )}
+                    {canInstall && (
+                      <Button size="sm" onClick={() => void installApp()}>
+                        <Smartphone className="h-3.5 w-3.5" /> Install App
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Design System Identity Swatches */}

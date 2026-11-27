@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { PwaProvider } from './context/PwaContext';
 import { RideProvider } from './context/RideContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { AppLayout } from './layouts/AppLayout';
@@ -25,9 +26,10 @@ import { PublicOnlyRoute } from './routes/PublicOnlyRoute';
 export default function App() {
   return (
     <ThemeProvider>
-      <AuthProvider>
-        <RideProvider>
-          <BrowserRouter>
+      <PwaProvider>
+        <AuthProvider>
+          <RideProvider>
+            <BrowserRouter>
           <Routes>
             <Route element={<PublicOnlyRoute />}>
               <Route path="/" element={<LandingPage />} />
@@ -57,9 +59,10 @@ export default function App() {
 
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
-        </BrowserRouter>
-        </RideProvider>
-      </AuthProvider>
+          </BrowserRouter>
+          </RideProvider>
+        </AuthProvider>
+      </PwaProvider>
     </ThemeProvider>
   );
 }

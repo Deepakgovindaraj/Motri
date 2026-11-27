@@ -46,6 +46,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } else {
       root.classList.remove('dark');
     }
+    const themeMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeMeta) {
+      themeMeta.setAttribute('content', isDark ? '#0E100F' : '#F4F3ED');
+    }
     localStorage.setItem(THEME_KEY, theme);
   }, [theme, isDark]);
 

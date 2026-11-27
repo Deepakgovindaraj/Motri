@@ -15,13 +15,16 @@ import {
   MoreHorizontal,
   PiggyBank,
   Receipt,
+  RefreshCw,
   Route as RouteIcon,
   Settings,
+  Smartphone,
   Sun,
   Wrench,
   X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePwa } from '../context/PwaContext';
 import { useTheme } from '../context/ThemeContext';
 import { notificationService } from '../services/notificationService';
 import { AppNotification } from '../types';
@@ -46,6 +49,14 @@ const secondaryNav = [
 export function AppLayout() {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const {
+    canInstall,
+    updateReady,
+    promptDismissed,
+    installApp,
+    dismissPrompt,
+    applyUpdate,
+  } = usePwa();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -303,6 +314,19 @@ export function AppLayout() {
                         {isDark ? 'On' : 'Off'}
                       </span>
                     </button>
+                    {canInstall && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setProfileOpen(false);
+                          void installApp();
+                        }}
+                        className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-sm font-semibold text-[#171A18] hover:bg-[#F4F3ED] dark:text-[#C5F467] dark:hover:bg-[#232724]"
+                      >
+                        <Smartphone className="h-4 w-4" />
+                        Install Vehixa App
+                      </button>
+                    )}
                   </div>
                   <div className="border-t border-[#ECEAE2] pt-1 dark:border-[#262B27]">
                     <button
@@ -323,6 +347,55 @@ export function AppLayout() {
 
       {/* Main Page Container */}
       <main className="mx-auto max-w-[1360px] px-4 py-6 sm:px-6 sm:py-8 lg:px-10">
+        {updateReady && (
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[#262A27] bg-[#171A18] px-4 py-3 text-white">
+            <div className="flex items-center gap-2.5 text-xs sm:text-sm">
+              <RefreshCw className="h-4 w-4 text-[#C5F467]" />
+              <span>A newer version of Vehixa is ready.</span>
+            </div>
+            <button
+              type="button"
+              onClick={applyUpdate}
+              className="rounded-[8px] bg-[#C5F467] px-3 py-1.5 text-xs font-bold text-[#171A18] hover:bg-[#B4E94D]"
+            >
+              Update Now
+            </button>
+          </div>
+        )}
+
+        {canInstall && !promptDismissed && (
+          <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[#C5D8B3] bg-[#DCE8D0] px-4 py-3 text-[#171A18] dark:border-[#2F4726] dark:bg-[#1B2816] dark:text-[#F4F3ED]">
+            <div className="flex items-center gap-2.5">
+              <span className="flex h-8 w-8 items-center justify-center rounded-[8px] bg-[#171A18] text-[#C5F467]">
+                <Smartphone className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-xs font-bold sm:text-sm">Install Vehixa as an App</p>
+                <p className="text-[11px] text-[#23331A] dark:text-[#B0B4AD]">
+                  Full-screen ride tracking, home-screen shortcuts &amp; offline GPS resilience.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => void installApp()}
+                className="rounded-[8px] bg-[#171A18] px-3.5 py-1.5 text-xs font-bold text-[#C5F467] hover:bg-[#232724] dark:bg-[#C5F467] dark:text-[#171A18]"
+              >
+                Install
+              </button>
+              <button
+                type="button"
+                onClick={dismissPrompt}
+                aria-label="Dismiss install prompt"
+                className="rounded-[8px] p-1 text-[#23331A] hover:bg-black/5 dark:text-[#A6AAA3] dark:hover:bg-white/10"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
         <Outlet />
       </main>
 
@@ -368,7 +441,7 @@ export function AppLayout() {
 
       {/* Mobile Secondary Menu Sheet */}
       {moreOpen && (
-        <div className="fixed inset-0 z-50 flex items-end bg-[#171A18]/50 lg:hidden dark:bg-black/70">
+        <div className="fixed inset-0 z-[1100] flex items-end bg-[#171A18]/50 lg:hidden dark:bg-black/70">
           <div className="w-full rounded-t-[18px] border-t border-[#E4E2D9] bg-white p-5 pb-8 dark:border-[#2B302C] dark:bg-[#171A18]">
             <div className="mb-4 flex items-center justify-between">
               <span className="text-sm font-bold text-[#171A18] dark:text-[#F4F3ED]">More Sections</span>
@@ -414,6 +487,19 @@ export function AppLayout() {
                 {isDark ? 'On' : 'Off'}
               </span>
             </button>
+            {canInstall && (
+              <button
+                type="button"
+                onClick={() => {
+                  setMoreOpen(false);
+                  void installApp();
+                }}
+                className="mt-2.5 flex w-full items-center justify-center gap-2 rounded-[10px] bg-[#C5F467] px-4 py-3 text-sm font-bold text-[#171A18]"
+              >
+                <Smartphone className="h-4 w-4" />
+                Install Vehixa App
+              </button>
+            )}
           </div>
         </div>
       )}

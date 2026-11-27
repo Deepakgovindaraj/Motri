@@ -1,0 +1,61 @@
+{
+  "name": "Vehixa — Automotive Finance & Mobility",
+  "short_name": "Vehixa",
+  "description": "Bike travel GPS tracking, pre-ride petrol logs, mileage analytics, and vehicle expense ledger.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#171A18",
+  "theme_color": "#171A18",
+  "categories": ["finance", "navigation", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Ride",
+      "short_name": "Start Ride",
+      "description": "Open live bike GPS ride tracker",
+      "url": "/trips",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Log Expense",
+      "short_name": "Expense",
+      "description": "Add a vehicle expense entry",
+      "url": "/expenses",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    },
+    {
+      "name": "Fill Petrol",
+      "short_name": "Petrol",
+      "description": "Log fuel fill-up and calculate mileage",
+      "url": "/fuel",
+      "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" }]
+    }
+  ]
+}

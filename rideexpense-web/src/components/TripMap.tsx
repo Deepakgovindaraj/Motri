@@ -235,7 +235,7 @@ export function TripMap({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-[12px] border border-[#E4E2D9] bg-[#FAF9F5] dark:border-[#2B302C] dark:bg-[#171A18] ${
+      className={`relative isolate z-0 overflow-hidden rounded-[12px] border border-[#E4E2D9] bg-[#FAF9F5] dark:border-[#2B302C] dark:bg-[#171A18] ${
         mode === 'street' ? 'trip-map-street' : ''
       } ${className}`}
     >

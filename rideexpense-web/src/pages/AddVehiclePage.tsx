@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { Card } from '../components/ui/Card';
+import { useToast } from '../context/ToastContext';
 import { VehicleForm } from '../features/vehicles/VehicleForm';
 import { vehicleService } from '../services/vehicleService';
 import { VehiclePayload } from '../types';
@@ -9,15 +10,19 @@ import { getApiErrorMessage } from '../utils/formatters';
 
 export function AddVehiclePage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [serverError, setServerError] = useState<string | null>(null);
 
   const handleSubmit = async (payload: VehiclePayload) => {
     setServerError(null);
     try {
       await vehicleService.create(payload);
+      toast.success(`"${payload.vehicleName}" added to your garage.`, 'Vehicle Registered');
       navigate('/vehicles', { replace: true });
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Could not register vehicle.'));
+      const msg = getApiErrorMessage(error, 'Could not register vehicle.');
+      setServerError(msg);
+      toast.error(msg);
     }
   };
 

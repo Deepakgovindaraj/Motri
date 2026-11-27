@@ -26,6 +26,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { usePwa } from '../context/PwaContext';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { notificationService } from '../services/notificationService';
 import { AppNotification } from '../types';
 import { formatDate } from '../utils/formatters';
@@ -49,6 +50,7 @@ const secondaryNav = [
 export function AppLayout() {
   const { user, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
+  const toast = useToast();
   const {
     canInstall,
     updateReady,
@@ -106,10 +108,12 @@ export function AppLayout() {
     await notificationService.markAllRead();
     setNotifications((prev) => prev.map((n) => ({ ...n, isRead: true })));
     setUnreadCount(0);
+    toast.success('All notifications marked as read.', 'Notifications');
   };
 
   const handleLogout = async () => {
     await logout();
+    toast.info('You have been signed out.', 'Signed Out');
     navigate('/login');
   };
 

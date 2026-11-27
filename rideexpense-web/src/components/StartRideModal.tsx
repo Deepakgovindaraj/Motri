@@ -6,6 +6,7 @@ import { Modal } from './ui/Modal';
 import { Select } from './ui/Select';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
+import { useToast } from '../context/ToastContext';
 import { PaymentMethod, TripLocationPoint, Vehicle } from '../types';
 import { formatCurrency, getApiErrorMessage } from '../utils/formatters';
 import { DetectedCoordinate, detectCurrentPosition } from '../utils/location';
@@ -25,6 +26,7 @@ export function StartRideModal({
 }) {
   const { preferences } = useAuth();
   const { startRide, lastPetrolPrice, isBusy } = useRide();
+  const toast = useToast();
 
   const [vehicleId, setVehicleId] = useState('');
   const [purpose, setPurpose] = useState('Travel');
@@ -99,13 +101,17 @@ export function StartRideModal({
     setError(null);
 
     if (!vehicleId) {
-      setError('Please select a bike or vehicle first.');
+      const msg = 'Please select a bike or vehicle first.';
+      setError(msg);
+      toast.error(msg);
       return;
     }
 
     if (filledPetrol) {
       if (amountNum <= 0 || priceNum <= 0) {
-        setError('Enter both petrol amount paid and petrol price per litre.');
+        const msg = 'Enter both petrol amount paid and petrol price per litre.';
+        setError(msg);
+        toast.error(msg);
         return;
       }
     }
@@ -139,10 +145,13 @@ export function StartRideModal({
             }
           : {}),
       });
+      toast.success('Live GPS bike tracking started.', 'Ride Started');
       onClose();
       onStarted?.();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Could not start ride.'));
+      const msg = getApiErrorMessage(err, 'Could not start ride.');
+      setError(msg);
+      toast.error(msg);
     }
   };
 

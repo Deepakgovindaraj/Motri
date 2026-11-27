@@ -5,6 +5,7 @@ import { Input } from './ui/Input';
 import { Modal } from './ui/Modal';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
+import { useToast } from '../context/ToastContext';
 import { TripLocationPoint } from '../types';
 import { formatNumber, getApiErrorMessage } from '../utils/formatters';
 import { DetectedCoordinate, detectCurrentPosition } from '../utils/location';
@@ -20,6 +21,7 @@ export function StopRideModal({
 }) {
   const { preferences } = useAuth();
   const { activeRide, liveDistanceKm, stopRide, isBusy } = useRide();
+  const toast = useToast();
   const [endLocation, setEndLocation] = useState('');
   const [detectedCoord, setDetectedCoord] = useState<DetectedCoordinate | null>(null);
   const [endOdometer, setEndOdometer] = useState('');
@@ -78,16 +80,24 @@ export function StopRideModal({
       : null;
 
     try {
-      await stopRide({
+      const completed = await stopRide({
         endLocation: endLocation || undefined,
         finalPoint,
         endOdometer: endOdometer ? Number(endOdometer) : undefined,
         notes: notes || undefined,
       });
+      toast.success(
+        completed
+          ? `${formatNumber(completed.distance, 2)} ${distanceUnit} recorded in ${completed.duration} min.`
+          : 'Ride completed and saved.',
+        'Ride Completed',
+      );
       onClose();
       onCompleted?.();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Could not complete ride.'));
+      const msg = getApiErrorMessage(err, 'Could not complete ride.');
+      setError(msg);
+      toast.error(msg);
     }
   };
 

@@ -14,6 +14,7 @@ import { Select } from '../components/ui/Select';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
+import { useToast } from '../context/ToastContext';
 import { tripService } from '../services/tripService';
 import { vehicleService } from '../services/vehicleService';
 import { Trip, TripLocationPoint, Vehicle, VehicleRef } from '../types';
@@ -33,6 +34,7 @@ interface ManualTripFormValues {
 
 export function TripsPage() {
   const { preferences } = useAuth();
+  const toast = useToast();
   const {
     activeRide,
     livePoints,
@@ -140,7 +142,9 @@ export function TripsPage() {
   const onSubmitManual = async (values: ManualTripFormValues) => {
     setFormError(null);
     if (Number(values.endOdometer) < Number(values.startOdometer)) {
-      setFormError('Ending odometer cannot be less than starting odometer.');
+      const msg = 'Ending odometer cannot be less than starting odometer.';
+      setFormError(msg);
+      toast.error(msg, 'Invalid Odometer');
       return;
     }
     try {
@@ -162,19 +166,31 @@ export function TripsPage() {
         startTime: new Date().toISOString().slice(0, 16),
       });
       setShowManualModal(false);
+      toast.success(`Manual trip (${computedDistance} ${distanceUnit}) logged.`, 'Trip Saved');
       await loadData();
     } catch (err) {
-      setFormError(getApiErrorMessage(err, 'Failed to save manual trip'));
+      const msg = getApiErrorMessage(err, 'Failed to save manual trip');
+      setFormError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this trip record?')) return;
+    const confirmed = await toast.confirm({
+      title: 'Delete Trip Record',
+      message: 'Are you sure you want to delete this trip record?',
+      confirmLabel: 'Delete',
+      tone: 'danger',
+    });
+    if (!confirmed) return;
     try {
       await tripService.remove(id);
       setTrips((prev) => prev.filter((t) => t._id !== id));
+      toast.success('Trip record deleted.', 'Trip Deleted');
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete trip'));
+      const msg = getApiErrorMessage(err, 'Failed to delete trip');
+      setError(msg);
+      toast.error(msg);
     }
   };
 

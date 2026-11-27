@@ -8,6 +8,7 @@ import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { budgetService } from '../services/budgetService';
 import { expenseService } from '../services/expenseService';
 import { vehicleService } from '../services/vehicleService';
@@ -42,6 +43,7 @@ function getDefaultDates(period: 'monthly' | 'weekly' | 'annual' | 'custom') {
 
 export function BudgetsPage() {
   const { preferences } = useAuth();
+  const toast = useToast();
   const [budgets, setBudgets] = useState<BudgetProgress[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
@@ -117,19 +119,31 @@ export function BudgetsPage() {
         ...getDefaultDates('monthly'),
       });
       setShowModal(false);
+      toast.success('Budget created and monitoring alerts enabled.', 'Budget Saved');
       await loadData();
     } catch (err) {
-      setFormError(getApiErrorMessage(err, 'Failed to create budget'));
+      const msg = getApiErrorMessage(err, 'Failed to create budget');
+      setFormError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this budget?')) return;
+    const confirmed = await toast.confirm({
+      title: 'Delete Budget',
+      message: 'Are you sure you want to delete this budget?',
+      confirmLabel: 'Delete',
+      tone: 'danger',
+    });
+    if (!confirmed) return;
     try {
       await budgetService.remove(id);
       setBudgets((prev) => prev.filter((b) => b._id !== id));
+      toast.success('Budget removed.', 'Budget Deleted');
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete budget'));
+      const msg = getApiErrorMessage(err, 'Failed to delete budget');
+      setError(msg);
+      toast.error(msg);
     }
   };
 

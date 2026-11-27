@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import { PwaProvider } from './context/PwaContext';
 import { RideProvider } from './context/RideContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import { AppLayout } from './layouts/AppLayout';
 import { AddVehiclePage } from './pages/AddVehiclePage';
 import { AnalyticsPage } from './pages/AnalyticsPage';
@@ -26,8 +27,9 @@ import { PublicOnlyRoute } from './routes/PublicOnlyRoute';
 export default function App() {
   return (
     <ThemeProvider>
-      <PwaProvider>
-        <AuthProvider>
+      <ToastProvider>
+        <PwaProvider>
+          <AuthProvider>
           <RideProvider>
             <BrowserRouter>
           <Routes>
@@ -63,6 +65,7 @@ export default function App() {
           </RideProvider>
         </AuthProvider>
       </PwaProvider>
+      </ToastProvider>
     </ThemeProvider>
   );
 }

@@ -6,6 +6,7 @@ import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { VehicleForm } from '../features/vehicles/VehicleForm';
 import { vehicleService } from '../services/vehicleService';
 import { Vehicle, VehiclePayload } from '../types';
@@ -15,6 +16,7 @@ export function VehicleDetailsPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { preferences } = useAuth();
+  const toast = useToast();
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,20 +51,32 @@ export function VehicleDetailsPage() {
       const updated = await vehicleService.update(id, payload);
       setVehicle(updated);
       setIsEditing(false);
+      toast.success(`"${updated.vehicleName}" details updated.`, 'Vehicle Updated');
     } catch (err) {
-      setUpdateError(getApiErrorMessage(err, 'Failed to update vehicle'));
+      const msg = getApiErrorMessage(err, 'Failed to update vehicle');
+      setUpdateError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDelete = async () => {
     if (!vehicle) return;
-    if (!window.confirm(`Delete "${vehicle.vehicleName}"? This cannot be undone.`)) return;
+    const confirmed = await toast.confirm({
+      title: 'Delete Vehicle',
+      message: `Delete "${vehicle.vehicleName}"? This action cannot be undone.`,
+      confirmLabel: 'Delete Vehicle',
+      tone: 'danger',
+    });
+    if (!confirmed) return;
     setIsDeleting(true);
     try {
       await vehicleService.remove(vehicle._id);
+      toast.success(`"${vehicle.vehicleName}" deleted.`, 'Vehicle Deleted');
       navigate('/vehicles', { replace: true });
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete vehicle'));
+      const msg = getApiErrorMessage(err, 'Failed to delete vehicle');
+      setError(msg);
+      toast.error(msg);
       setIsDeleting(false);
     }
   };

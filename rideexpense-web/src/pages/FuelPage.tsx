@@ -20,6 +20,7 @@ import { Select } from '../components/ui/Select';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { fuelService } from '../services/fuelService';
 import { vehicleService } from '../services/vehicleService';
 import { FuelLog, PaymentMethod, Vehicle, VehicleRef } from '../types';
@@ -41,6 +42,7 @@ export function FuelPage() {
   const { preferences } = useAuth();
   const { lastPetrolPrice } = useRide();
   const { isDark } = useTheme();
+  const toast = useToast();
   const [logs, setLogs] = useState<FuelLog[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [summary, setSummary] = useState({ totalFuelCost: 0, totalQuantity: 0, averageMileage: 0 });
@@ -141,19 +143,31 @@ export function FuelPage() {
         expenseDate: new Date().toISOString().slice(0, 10),
       });
       setShowModal(false);
+      toast.success('Fuel fill-up saved and mileage updated.', 'Fuel Logged');
       await loadData();
     } catch (err) {
-      setFormError(getApiErrorMessage(err, 'Failed to save fuel log'));
+      const msg = getApiErrorMessage(err, 'Failed to save fuel log');
+      setFormError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this fuel log and its linked expense entry?')) return;
+    const confirmed = await toast.confirm({
+      title: 'Delete Fuel Log',
+      message: 'Delete this fuel log and its linked expense entry?',
+      confirmLabel: 'Delete',
+      tone: 'danger',
+    });
+    if (!confirmed) return;
     try {
       await fuelService.remove(id);
+      toast.success('Fuel log removed.', 'Fuel Log Deleted');
       await loadData();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete fuel log'));
+      const msg = getApiErrorMessage(err, 'Failed to delete fuel log');
+      setError(msg);
+      toast.error(msg);
     }
   };
 

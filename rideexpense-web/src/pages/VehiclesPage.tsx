@@ -8,6 +8,7 @@ import { Card } from '../components/ui/Card';
 import { Select } from '../components/ui/Select';
 import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { analyticsService } from '../services/analyticsService';
 import { documentService } from '../services/documentService';
 import { maintenanceService } from '../services/maintenanceService';
@@ -24,6 +25,7 @@ import { formatCurrency, formatDate, formatNumber, getApiErrorMessage } from '..
 
 export function VehiclesPage() {
   const { preferences } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -103,13 +105,22 @@ export function VehiclesPage() {
   );
 
   const handleDelete = async (vehicle: Vehicle) => {
-    if (!window.confirm(`Remove "${vehicle.vehicleName}" (${vehicle.registrationNumber})?`)) return;
+    const confirmed = await toast.confirm({
+      title: 'Remove Vehicle',
+      message: `Remove "${vehicle.vehicleName}" (${vehicle.registrationNumber}) from your garage?`,
+      confirmLabel: 'Remove',
+      tone: 'danger',
+    });
+    if (!confirmed) return;
     setDeletingId(vehicle._id);
     try {
       await vehicleService.remove(vehicle._id);
+      toast.success(`"${vehicle.vehicleName}" removed from your garage.`, 'Vehicle Removed');
       await loadData();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete vehicle'));
+      const msg = getApiErrorMessage(err, 'Failed to delete vehicle');
+      setError(msg);
+      toast.error(msg);
     } finally {
       setDeletingId(null);
     }

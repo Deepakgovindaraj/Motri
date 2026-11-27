@@ -25,6 +25,7 @@ import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { usePwa } from '../context/PwaContext';
 import { ThemePreference, useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { authService } from '../services/authService';
 import { documentService } from '../services/documentService';
 import { expenseService } from '../services/expenseService';
@@ -46,6 +47,7 @@ type SettingsTab = 'account' | 'preferences' | 'notifications' | 'security' | 'a
 export function ProfilePage() {
   const { user, preferences, refreshProfile, logout } = useAuth();
   const { theme, resolvedTheme, isDark, setTheme } = useTheme();
+  const toast = useToast();
   const {
     canInstall,
     isInstalled,
@@ -90,9 +92,12 @@ export function ProfilePage() {
         },
       });
       await refreshProfile();
-      setStatusMessage('Settings updated and saved to MongoDB.');
+      setStatusMessage(null);
+      toast.success('Settings updated and saved to MongoDB.', 'Settings Saved');
     } catch (err) {
-      setErrorMessage(getApiErrorMessage(err, 'Failed to save settings'));
+      const msg = getApiErrorMessage(err, 'Failed to save settings');
+      setErrorMessage(msg);
+      toast.error(msg);
     }
   };
 
@@ -121,6 +126,9 @@ export function ProfilePage() {
       link.download = `vehixa-export-${new Date().toISOString().slice(0, 10)}.json`;
       link.click();
       URL.revokeObjectURL(url);
+      toast.success('Complete JSON backup downloaded.', 'Data Exported');
+    } catch (err) {
+      toast.error(getApiErrorMessage(err, 'Failed to export data'));
     } finally {
       setExporting(false);
     }

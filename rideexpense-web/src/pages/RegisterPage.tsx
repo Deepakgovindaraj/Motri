@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { AuthLayout } from '../layouts/AuthLayout';
 import { getApiErrorMessage } from '../utils/formatters';
 
@@ -29,6 +30,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export function RegisterPage() {
   const { register: registerAccount } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const [serverError, setServerError] = useState<string | null>(null);
 
@@ -44,9 +46,12 @@ export function RegisterPage() {
     setServerError(null);
     try {
       await registerAccount(values.name, values.email, values.password);
+      toast.success('Your Vehixa workspace is ready.', 'Account Created');
       navigate('/dashboard', { replace: true });
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Registration failed. Please try again.'));
+      const msg = getApiErrorMessage(error, 'Registration failed. Please try again.');
+      setServerError(msg);
+      toast.error(msg, 'Registration Failed');
     }
   };
 

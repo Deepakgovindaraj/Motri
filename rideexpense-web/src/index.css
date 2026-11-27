@@ -71,3 +71,18 @@ html.dark .trip-map-street .leaflet-tile-pane {
   border: 3px solid #171A18;
   animation: vehixaPulse 1.8s infinite;
 }
+
+@keyframes vehixaToastIn {
+  from {
+    opacity: 0;
+    transform: translate3d(16px, -8px, 0) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+.vehixa-toast-in {
+  animation: vehixaToastIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}

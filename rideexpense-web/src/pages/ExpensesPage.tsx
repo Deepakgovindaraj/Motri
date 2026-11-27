@@ -10,6 +10,7 @@ import { Input } from '../components/ui/Input';
 import { Modal } from '../components/ui/Modal';
 import { Select } from '../components/ui/Select';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { expenseService } from '../services/expenseService';
 import { vehicleService } from '../services/vehicleService';
 import { Expense, ExpenseCategory, PaymentMethod, Vehicle, VehicleRef } from '../types';
@@ -27,6 +28,7 @@ interface ExpenseFormValues {
 
 export function ExpensesPage() {
   const { preferences } = useAuth();
+  const toast = useToast();
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -128,21 +130,31 @@ export function ExpensesPage() {
       });
       setShowModal(false);
       setPage(1);
+      toast.success('Expense entry recorded in ledger.', 'Expense Saved');
       await loadExpenses();
     } catch (err) {
-      setFormError(getApiErrorMessage(err, 'Failed to record expense'));
+      const msg = getApiErrorMessage(err, 'Failed to record expense');
+      setFormError(msg);
+      toast.error(msg);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Delete this transaction (and any linked fuel or maintenance entry)?')) {
-      return;
-    }
+    const confirmed = await toast.confirm({
+      title: 'Delete Transaction',
+      message: 'Delete this transaction (and any linked fuel or maintenance entry)?',
+      confirmLabel: 'Delete',
+      tone: 'danger',
+    });
+    if (!confirmed) return;
     try {
       await expenseService.remove(id);
+      toast.success('Transaction deleted from ledger.', 'Expense Deleted');
       await loadExpenses();
     } catch (err) {
-      setError(getApiErrorMessage(err, 'Failed to delete expense'));
+      const msg = getApiErrorMessage(err, 'Failed to delete expense');
+      setError(msg);
+      toast.error(msg);
     }
   };
 

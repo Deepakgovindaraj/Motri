@@ -41,6 +41,7 @@ import { StatusIndicator } from '../components/ui/StatusIndicator';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { analyticsService } from '../services/analyticsService';
 import { budgetService } from '../services/budgetService';
 import { documentService } from '../services/documentService';
@@ -69,6 +70,7 @@ type QuickActionKind = 'trip' | 'expense' | 'fuel' | 'maintenance' | null;
 export function DashboardPage() {
   const { user, preferences } = useAuth();
   const { isDark } = useTheme();
+  const toast = useToast();
   const {
     activeRide,
     livePoints,
@@ -232,10 +234,21 @@ export function DashboardPage() {
           notes: qaDescription || undefined,
         });
       }
+      const actionLabel =
+        quickModal === 'trip'
+          ? 'Manual trip logged.'
+          : quickModal === 'fuel'
+            ? 'Fuel fill-up saved.'
+            : quickModal === 'maintenance'
+              ? 'Maintenance record saved.'
+              : 'Expense recorded in ledger.';
       setQuickModal(null);
+      toast.success(actionLabel, 'Saved');
       await loadDashboard();
     } catch (err) {
-      setModalError(getApiErrorMessage(err, 'Failed to save entry'));
+      const msg = getApiErrorMessage(err, 'Failed to save entry');
+      setModalError(msg);
+      toast.error(msg);
     } finally {
       setModalSaving(false);
     }

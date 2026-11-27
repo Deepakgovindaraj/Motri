@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import { AuthLayout } from '../layouts/AuthLayout';
 import { getApiErrorMessage } from '../utils/formatters';
 
@@ -18,6 +19,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export function LoginPage() {
   const { login } = useAuth();
+  const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
   const [serverError, setServerError] = useState<string | null>(null);
@@ -36,9 +38,12 @@ export function LoginPage() {
     setServerError(null);
     try {
       await login(values.email, values.password);
+      toast.success('Signed in to your Vehixa workspace.', 'Welcome Back');
       navigate(from, { replace: true });
     } catch (error) {
-      setServerError(getApiErrorMessage(error, 'Unable to sign in. Check your credentials.'));
+      const msg = getApiErrorMessage(error, 'Unable to sign in. Check your credentials.');
+      setServerError(msg);
+      toast.error(msg, 'Sign In Failed');
     }
   };
 

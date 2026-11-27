@@ -20,6 +20,7 @@ import { DataTable, TableColumn } from '../components/ui/DataTable';
 import { Select } from '../components/ui/Select';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import { analyticsService } from '../services/analyticsService';
 import { vehicleService } from '../services/vehicleService';
 import {
@@ -37,6 +38,7 @@ type ReportGranularity = 'daily' | 'weekly' | 'monthly' | 'annual';
 export function AnalyticsPage() {
   const { preferences } = useAuth();
   const { isDark } = useTheme();
+  const toast = useToast();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [selectedVehicleId, setSelectedVehicleId] = useState('');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -117,6 +119,7 @@ export function AnalyticsPage() {
     link.download = `vehixa-insights-${selectedYear}.csv`;
     link.click();
     URL.revokeObjectURL(url);
+    toast.success(`Vehicle insights CSV for ${selectedYear} downloaded.`, 'CSV Exported');
   };
 
   const currentYear = new Date().getFullYear();

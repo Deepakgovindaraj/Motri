@@ -36,8 +36,12 @@ export function TripsPage() {
   const {
     activeRide,
     livePoints,
+    routePoints,
     liveDistanceKm,
+    liveAccuracy,
     elapsedSeconds,
+    wakeLockActive,
+    pendingSyncCount,
     gpsNotice,
     lastCompletedRide,
     clearLastCompletedRide,
@@ -261,7 +265,15 @@ export function TripsPage() {
       {/* Interactive Map + Ride Controller */}
       <div className="grid gap-6 lg:grid-cols-12">
         <div className="lg:col-span-8">
-          <TripMap points={mapPoints} className="h-80 w-full sm:h-96" />
+          <TripMap
+            points={mapPoints}
+            routePoints={activeRide ? routePoints : undefined}
+            isLive={Boolean(activeRide)}
+            liveDistanceKm={liveDistanceKm}
+            accuracyMeters={liveAccuracy}
+            distanceUnit={distanceUnit}
+            className="h-80 w-full sm:h-96"
+          />
         </div>
 
         <Card variant="dark" className="flex flex-col justify-between p-6 lg:col-span-4">
@@ -294,7 +306,7 @@ export function TripsPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-xs text-[#A6AAA3]">Distance Driven</p>
+                  <p className="text-xs text-[#A6AAA3]">Distance Driven (Road Matched)</p>
                   <p className="mt-1 text-3xl font-extrabold tabular-nums text-white">
                     {formatNumber(liveDistanceKm, 2)} {distanceUnit}
                   </p>
@@ -307,12 +319,21 @@ export function TripsPage() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-[#A6AAA3]">GPS Points</p>
+                    <p className="text-[#A6AAA3]">GPS Signal</p>
                     <p className="mt-1 text-lg font-bold tabular-nums text-white">
-                      {livePoints.length}
+                      {livePoints.length} pts
+                      {liveAccuracy ? (
+                        <span className="ml-1 text-xs font-semibold text-[#C5F467]">
+                          (±{liveAccuracy}m)
+                        </span>
+                      ) : null}
                     </p>
                   </div>
                 </div>
+                <p className="text-[11px] text-[#A6AAA3]">
+                  {wakeLockActive ? 'Screen wake-lock active for uninterrupted tracking' : 'Background recovery & offline buffer enabled'}
+                  {pendingSyncCount > 0 ? ` · ${pendingSyncCount} points queued for sync` : ''}
+                </p>
               </div>
             ) : (
               <div className="mt-5 space-y-4">

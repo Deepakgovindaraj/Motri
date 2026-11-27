@@ -19,7 +19,7 @@ import {
   UpdateTripInput,
 } from './trips.validation';
 
-const MAX_ACCEPTABLE_ACCURACY_METERS = 100;
+const MAX_ACCEPTABLE_ACCURACY_METERS = 200;
 const MAX_PLAUSIBLE_SPEED_KMH = 300;
 
 function haversineDistanceKm(
@@ -277,6 +277,14 @@ export async function addTripLocations(
     const recordedAt = pt.recordedAt ?? new Date();
 
     if (lastPoint) {
+      const sameTimestamp = Math.abs(recordedAt.getTime() - lastPoint.recordedAt.getTime()) < 1000;
+      const sameCoord =
+        Math.abs(pt.latitude - lastPoint.latitude) < 1e-6 &&
+        Math.abs(pt.longitude - lastPoint.longitude) < 1e-6;
+      if (sameTimestamp && sameCoord) {
+        continue;
+      }
+
       const segmentKm = haversineDistanceKm(
         lastPoint.latitude,
         lastPoint.longitude,

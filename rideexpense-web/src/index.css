@@ -47,3 +47,27 @@ html.dark {
 html.dark .trip-map-street .leaflet-tile-pane {
   filter: brightness(0.88) invert(1) contrast(0.92) hue-rotate(195deg) saturate(0.45);
 }
+
+@keyframes vehixaPulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(197, 244, 103, 0.75);
+  }
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 14px rgba(197, 244, 103, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(197, 244, 103, 0);
+  }
+}
+
+.vehixa-live-puck {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background-color: #C5F467;
+  border: 3px solid #171A18;
+  animation: vehixaPulse 1.8s infinite;
+}

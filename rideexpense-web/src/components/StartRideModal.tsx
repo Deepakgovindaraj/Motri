@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
-import { Fuel, MapPin, Navigation, Play } from 'lucide-react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Fuel, LocateFixed, MapPin, Navigation, Play, RefreshCw } from 'lucide-react';
 import { Button } from './ui/Button';
 import { Input } from './ui/Input';
 import { Modal } from './ui/Modal';
 import { Select } from './ui/Select';
 import { useAuth } from '../context/AuthContext';
 import { useRide } from '../context/RideContext';
-import { PaymentMethod, Vehicle } from '../types';
+import { PaymentMethod, TripLocationPoint, Vehicle } from '../types';
 import { formatCurrency, getApiErrorMessage } from '../utils/formatters';
-import { detectCurrentPosition } from '../utils/location';
+import { DetectedCoordinate, detectCurrentPosition } from '../utils/location';
 
 export function StartRideModal({
   open,
@@ -29,7 +29,9 @@ export function StartRideModal({
   const [vehicleId, setVehicleId] = useState('');
   const [purpose, setPurpose] = useState('Travel');
   const [startLocation, setStartLocation] = useState('');
+  const [detectedCoord, setDetectedCoord] = useState<DetectedCoordinate | null>(null);
   const [detectingLoc, setDetectingLoc] = useState(false);
+  const [locHint, setLocHint] = useState<string | null>(null);
 
   const [filledPetrol, setFilledPetrol] = useState(false);
   const [petrolAmount, setPetrolAmount] = useState('');
@@ -39,34 +41,49 @@ export function StartRideModal({
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('UPI');
   const [error, setError] = useState<string | null>(null);
 
+  const detectEpochRef = useRef(0);
+
+  const runExactDetection = useCallback(async () => {
+    const epoch = ++detectEpochRef.current;
+    setDetectingLoc(true);
+    setLocHint(null);
+    try {
+      const pos = await detectCurrentPosition({ desiredAccuracyMeters: 25, maxWaitMs: 4500 });
+      if (detectEpochRef.current !== epoch) return;
+      setDetectedCoord(pos);
+      setStartLocation(pos.label);
+      if (pos.accuracy && pos.accuracy > 80) {
+        setLocHint(`Coarse signal (±${Math.round(pos.accuracy)}m). Step outside or tap Re-detect for sharper GPS.`);
+      }
+    } catch (err) {
+      if (detectEpochRef.current !== epoch) return;
+      setLocHint(err instanceof Error ? err.message : 'Enable device GPS / High Accuracy location.');
+    } finally {
+      if (detectEpochRef.current === epoch) {
+        setDetectingLoc(false);
+      }
+    }
+  }, []);
+
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      detectEpochRef.current += 1;
+      return;
+    }
+
     const selected =
-      vehicles.find((v) => v._id === (defaultVehicleId || vehicleId)) ?? vehicles[0];
+      vehicles.find((v) => v._id === (defaultVehicleId || '')) ?? vehicles[0];
     if (selected) {
       setVehicleId(selected._id);
       setOdometer(String(selected.currentOdometer));
     }
     setPetrolPrice(lastPetrolPrice || '102');
     setError(null);
+    setDetectedCoord(null);
+    setStartLocation('');
 
-    let active = true;
-    setDetectingLoc(true);
-    detectCurrentPosition()
-      .then((pos) => {
-        if (active) setStartLocation(pos.label);
-      })
-      .catch(() => {
-        // User can still start ride or type start location manually
-      })
-      .finally(() => {
-        if (active) setDetectingLoc(false);
-      });
-
-    return () => {
-      active = false;
-    };
-  }, [open, defaultVehicleId, vehicles, lastPetrolPrice, vehicleId]);
+    void runExactDetection();
+  }, [open, defaultVehicleId, vehicles, lastPetrolPrice, runExactDetection]);
 
   const amountNum = Number(petrolAmount || 0);
   const priceNum = Number(petrolPrice || 0);
@@ -93,11 +110,22 @@ export function StartRideModal({
       }
     }
 
+    const initialPoint: TripLocationPoint | null = detectedCoord
+      ? {
+          latitude: detectedCoord.latitude,
+          longitude: detectedCoord.longitude,
+          accuracy: detectedCoord.accuracy,
+          speed: detectedCoord.speed ?? undefined,
+          recordedAt: new Date(detectedCoord.timestamp).toISOString(),
+        }
+      : null;
+
     try {
       await startRide({
         vehicleId,
         purpose,
         startLocation: startLocation || undefined,
+        initialPoint,
         ...(filledPetrol
           ? {
               preRideFuel: {
@@ -123,7 +151,7 @@ export function StartRideModal({
       open={open}
       onClose={onClose}
       title="Start Bike Ride"
-      subtitle="Optionally log petrol filled before riding, detect your current location, and track until destination."
+      subtitle="Locks your exact GPS source location, records optional pre-ride petrol, and tracks the live road route."
     >
       <form onSubmit={handleSubmit} className="space-y-5">
         {error && (
@@ -160,26 +188,54 @@ export function StartRideModal({
           />
         </div>
 
-        {/* Auto-detected Starting Location */}
+        {/* Exact GPS Source Location */}
         <div className="rounded-[10px] border border-[#E4E2D9] bg-[#FAF9F5] p-3.5 dark:border-[#2B302C] dark:bg-[#1E221F]">
-          <div className="mb-1.5 flex items-center justify-between text-xs font-semibold text-[#5C615A] dark:text-[#B0B4AD]">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2 text-xs font-semibold text-[#5C615A] dark:text-[#B0B4AD]">
             <span className="inline-flex items-center gap-1.5">
               <MapPin className="h-3.5 w-3.5 text-[#171A18] dark:text-[#C5F467]" />
-              Current Starting Location
+              Exact Starting Location
             </span>
-            {detectingLoc && (
-              <span className="inline-flex items-center gap-1 text-[11px] text-[#7D827A] dark:text-[#8E938B]">
-                <Navigation className="h-3 w-3 animate-pulse" /> Detecting GPS...
-              </span>
-            )}
+            <div className="flex items-center gap-2">
+              {detectingLoc ? (
+                <span className="inline-flex items-center gap-1 rounded-[6px] bg-[#DCE8D0] px-2 py-0.5 text-[11px] font-semibold text-[#23331A] dark:bg-[#1E2E18] dark:text-[#C5F467]">
+                  <Navigation className="h-3 w-3 animate-pulse" /> Locking GPS...
+                </span>
+              ) : detectedCoord ? (
+                <span className="inline-flex items-center gap-1 rounded-[6px] bg-[#C5F467] px-2 py-0.5 text-[11px] font-bold text-[#171A18]">
+                  <LocateFixed className="h-3 w-3" />
+                  {detectedCoord.accuracy ? `±${Math.round(detectedCoord.accuracy)}m` : 'Locked'}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                onClick={() => void runExactDetection()}
+                disabled={detectingLoc}
+                className="inline-flex items-center gap-1 rounded-[6px] border border-[#DCDAD0] bg-white px-2 py-0.5 text-[11px] font-semibold text-[#171A18] hover:bg-[#F4F3ED] disabled:opacity-60 dark:border-[#343A35] dark:bg-[#171A18] dark:text-[#F4F3ED] dark:hover:bg-[#232724]"
+              >
+                <RefreshCw className={`h-3 w-3 ${detectingLoc ? 'animate-spin' : ''}`} />
+                Re-detect
+              </button>
+            </div>
           </div>
+
           <input
             type="text"
             value={startLocation}
             onChange={(e) => setStartLocation(e.target.value)}
-            placeholder="Detecting location or type starting point..."
+            placeholder="Locking exact GPS coordinates..."
             className="w-full rounded-[8px] border border-[#DCDAD0] bg-white px-3 py-2 text-sm text-[#171A18] placeholder-[#A6AAA3] focus:border-[#171A18] focus:outline-none dark:border-[#343A35] dark:bg-[#171A18] dark:text-[#F4F3ED] dark:placeholder-[#7D827A] dark:focus:border-[#C5F467]"
           />
+
+          {detectedCoord && (
+            <p className="mt-1.5 text-[11px] tabular-nums text-[#7D827A] dark:text-[#8E938B]">
+              GPS: {detectedCoord.latitude.toFixed(5)}, {detectedCoord.longitude.toFixed(5)}
+            </p>
+          )}
+          {locHint && (
+            <p className="mt-1 text-[11px] font-medium text-[#B42318] dark:text-[#FCA5A5]">
+              {locHint}
+            </p>
+          )}
         </div>
 
         {/* Optional Pre-Ride Petrol Input */}

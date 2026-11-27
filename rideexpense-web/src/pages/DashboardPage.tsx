@@ -29,6 +29,7 @@ import {
 } from 'recharts';
 import { StartRideModal } from '../components/StartRideModal';
 import { StopRideModal } from '../components/StopRideModal';
+import { TripMap } from '../components/TripMap';
 import { VehicleVisual } from '../components/VehicleVisual';
 import { Badge } from '../components/ui/Badge';
 import { Button } from '../components/ui/Button';
@@ -70,8 +71,14 @@ export function DashboardPage() {
   const { isDark } = useTheme();
   const {
     activeRide,
+    livePoints,
+    routePoints,
     liveDistanceKm,
+    liveAccuracy,
     elapsedSeconds,
+    wakeLockActive,
+    pendingSyncCount,
+    gpsNotice,
     lastCompletedRide,
     clearLastCompletedRide,
     lastPetrolPrice,
@@ -336,32 +343,57 @@ export function DashboardPage() {
         </div>
       </section>
 
-      {/* Active Ride Live Banner */}
+      {/* Active Ride Live Map & Commuting Panel */}
       {activeRide && (
-        <Card variant="dark" className="flex flex-col justify-between gap-4 p-5 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-3.5">
-            <StatusIndicator tone="active" label="LIVE RIDE" />
-            <div>
-              <p className="text-sm font-bold text-white">
-                Started from {activeRide.startLocation || 'Current Location'}
-              </p>
-              <p className="text-xs text-[#A6AAA3]">
-                {formatNumber(liveDistanceKm, 2)} {distanceUnit} driven ·{' '}
-                {String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:
-                {String(elapsedSeconds % 60).padStart(2, '0')} elapsed
-              </p>
+        <Card variant="dark" className="overflow-hidden p-5 sm:p-6">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="flex items-center gap-3.5">
+              <StatusIndicator tone="active" label="LIVE RIDE" />
+              <div>
+                <p className="text-sm font-bold text-white">
+                  From {activeRide.startLocation || 'Current Location'}
+                </p>
+                <p className="text-xs text-[#A6AAA3]">
+                  <span className="font-semibold tabular-nums text-[#C5F467]">
+                    {formatNumber(liveDistanceKm, 2)} {distanceUnit}
+                  </span>{' '}
+                  driven ·{' '}
+                  <span className="tabular-nums">
+                    {String(Math.floor(elapsedSeconds / 60)).padStart(2, '0')}:
+                    {String(elapsedSeconds % 60).padStart(2, '0')}
+                  </span>{' '}
+                  elapsed · {livePoints.length} GPS pts
+                  {liveAccuracy ? ` · ±${liveAccuracy}m` : ''}
+                  {wakeLockActive ? ' · Screen Awake' : ''}
+                  {pendingSyncCount > 0 ? ` · ${pendingSyncCount} buffered` : ''}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2.5">
+              <Link
+                to="/trips"
+                className="rounded-[10px] bg-[#232724] px-3.5 py-2 text-xs font-semibold text-white hover:bg-[#323733]"
+              >
+                Full Telemetry
+              </Link>
+              <Button size="sm" variant="danger" onClick={() => setShowStopRide(true)}>
+                <Square className="h-3.5 w-3.5" /> Stop Ride
+              </Button>
             </div>
           </div>
-          <div className="flex items-center gap-2.5">
-            <Link
-              to="/trips"
-              className="rounded-[10px] bg-[#232724] px-3.5 py-2 text-xs font-semibold text-white hover:bg-[#323733]"
-            >
-              Open Live Map
-            </Link>
-            <Button size="sm" variant="danger" onClick={() => setShowStopRide(true)}>
-              <Square className="h-3.5 w-3.5" /> Stop Ride
-            </Button>
+
+          {gpsNotice && <p className="mt-2.5 text-xs text-[#C5F467]">{gpsNotice}</p>}
+
+          <div className="mt-4">
+            <TripMap
+              points={livePoints}
+              routePoints={routePoints}
+              isLive
+              liveDistanceKm={liveDistanceKm}
+              accuracyMeters={liveAccuracy}
+              distanceUnit={distanceUnit}
+              className="h-64 w-full sm:h-80"
+            />
           </div>
         </Card>
       )}
